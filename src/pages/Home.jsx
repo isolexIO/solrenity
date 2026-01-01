@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -19,9 +19,11 @@ import {
 } from "lucide-react";
 import { createPageUrl } from '../utils';
 import { useWallet } from '../components/wallet/WalletContext';
+import WalletModal from '../components/wallet/WalletModal';
 
 export default function Home() {
   const { connected } = useWallet();
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const features = [
     {
@@ -109,10 +111,16 @@ export default function Home() {
                   </Button>
                 </Link>
               ) : (
-                <Button className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl">
-                  <Wallet className="w-5 h-5 mr-2" />
-                  Connect Wallet
-                </Button>
+                <>
+                  <Button 
+                    onClick={() => setShowWalletModal(true)}
+                    className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl"
+                  >
+                    <Wallet className="w-5 h-5 mr-2" />
+                    Connect Wallet
+                  </Button>
+                  <WalletModal open={showWalletModal} onClose={() => setShowWalletModal(false)} />
+                </>
               )}
               
               <Link to={createPageUrl('Explorer')}>
@@ -209,7 +217,10 @@ export default function Home() {
                 </Button>
               </Link>
             ) : (
-              <Button className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl">
+              <Button 
+                onClick={() => setShowWalletModal(true)}
+                className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white text-lg px-8 py-6 rounded-xl"
+              >
                 <Wallet className="w-5 h-5 mr-2" />
                 Connect Wallet to Start
               </Button>
