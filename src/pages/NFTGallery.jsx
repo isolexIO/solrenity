@@ -9,7 +9,7 @@ import { useWallet } from '../components/wallet/WalletContext';
 import { base44 } from '@/api/base44Client';
 
 export default function NFTGallery() {
-  const { connected } = useWallet();
+  const { connected, publicKeyFull } = useWallet();
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('owned');
@@ -17,18 +17,23 @@ export default function NFTGallery() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (connected) {
+    if (connected && publicKeyFull) {
       fetchNFTs();
+    } else {
+      setLoading(false);
     }
-  }, [connected]);
+  }, [connected, publicKeyFull]);
 
   const fetchNFTs = async () => {
     try {
       setLoading(true);
-      const response = await base44.functions.invoke('getMagicEdenNFTs');
+      const response = await base44.functions.invoke('getMagicEdenNFTs', { 
+        walletAddress: publicKeyFull 
+      });
       setNfts(response.data.nfts || []);
     } catch (error) {
       console.error('Error fetching NFTs:', error);
+      setNfts([]);
     } finally {
       setLoading(false);
     }

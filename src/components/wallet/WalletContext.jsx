@@ -22,18 +22,25 @@ const WalletContextProvider = ({ children }) => {
 
   // Fetch balance when wallet connects
   useEffect(() => {
-    if (solanaWallet.publicKey) {
+    if (solanaWallet.publicKey && connection) {
       fetchBalance();
       
       // Detect wallet type
       if (solanaWallet.wallet?.adapter?.name) {
         setWalletType(solanaWallet.wallet.adapter.name.toLowerCase());
       }
+      
+      // Set up balance polling every 10 seconds
+      const interval = setInterval(() => {
+        fetchBalance();
+      }, 10000);
+      
+      return () => clearInterval(interval);
     } else {
       setBalance(0);
       setWalletType(null);
     }
-  }, [solanaWallet.publicKey, network]);
+  }, [solanaWallet.publicKey, connection, network]);
 
   const fetchBalance = async () => {
     try {
@@ -94,11 +101,11 @@ export const WalletProvider = ({ children }) => {
   const endpoint = useMemo(() => {
     switch (network) {
       case 'devnet':
-        return clusterApiUrl('devnet');
+        return 'https://api.devnet.solana.com';
       case 'testnet':
-        return clusterApiUrl('testnet');
+        return 'https://api.testnet.solana.com';
       default:
-        return clusterApiUrl('mainnet-beta');
+        return 'https://api.mainnet-beta.solana.com';
     }
   }, [network]);
 
@@ -111,8 +118,8 @@ export const WalletProvider = ({ children }) => {
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint}>
-      <SolanaWalletProvider wallets={wallets} autoConnect>
+    <ConnectionProvider endpoint={endpoint} config={{ commitment: 'confirmed' }}>
+      <SolanaWalletProvider wallets={wallets} autoConnect={true}>
         <WalletContextProvider>
           {children}
         </WalletContextProvider>
