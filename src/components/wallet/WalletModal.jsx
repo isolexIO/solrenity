@@ -50,58 +50,79 @@ export default function WalletModal({ open, onClose }) {
 
   const generateJupiterQR = async () => {
     try {
-      // Create WalletConnect URI - Jupiter Mobile expects this format
-      const dappUrl = window.location.origin;
-      const bridgeUrl = 'https://bridge.walletconnect.org';
-      const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
-        .map(b => b.toString(16).padStart(2, '0'))
-        .join('');
+      // Find WalletConnect adapter
+      const wcAdapter = wallet?.wallets?.find(w => 
+        w.adapter.name === 'WalletConnect'
+      );
       
-      const wcUri = `wc:${key}@1?bridge=${encodeURIComponent(bridgeUrl)}&key=${key}`;
+      if (!wcAdapter) {
+        console.error('WalletConnect adapter not found');
+        return;
+      }
+
+      // Select WalletConnect
+      wallet.select('WalletConnect');
       
-      // Generate QR code with high error correction to allow logo overlay
-      const qrUrl = await QRCode.toDataURL(wcUri, {
-        width: 300,
-        margin: 2,
-        errorCorrectionLevel: 'H',
-        color: {
-          dark: '#000000',
-          light: '#FFFFFF'
-        }
-      });
+      // Wait for adapter to initialize and get URI
+      await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Create canvas to add Jupiter logo in center
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
+      // Listen for URI event
+      const adapter = wcAdapter.adapter;
+      if (adapter && adapter.on) {
+        adapter.on('display_uri', (uri) => {
+          console.log('WalletConnect URI:', uri);
+          
+          // Generate QR code with Jupiter logo
+          QRCode.toDataURL(uri, {
+            width: 300,
+            margin: 2,
+            errorCorrectionLevel: 'H',
+            color: {
+              dark: '#000000',
+              light: '#FFFFFF'
+            }
+          }).then(qrUrl => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 300;
+            canvas.height = 300;
+            
+            const qrImage = new Image();
+            qrImage.onload = () => {
+              ctx.drawImage(qrImage, 0, 0, 300, 300);
+              
+              // Add white circle for logo
+              const centerX = 150;
+              const centerY = 150;
+              const radius = 35;
+              
+              ctx.fillStyle = '#FFFFFF';
+              ctx.beginPath();
+              ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+              ctx.fill();
+              
+              // Draw Jupiter logo
+              const logo = new Image();
+              logo.crossOrigin = 'anonymous';
+              logo.onload = () => {
+                const logoSize = 60;
+                ctx.drawImage(logo, centerX - logoSize/2, centerY - logoSize/2, logoSize, logoSize);
+                setQrDataUrl(canvas.toDataURL());
+              };
+              logo.src = 'https://static.jup.ag/jup/icon.png';
+            };
+            qrImage.src = qrUrl;
+          });
+        });
+      }
       
-      // Draw QR code
-      const qrImage = new Image();
-      qrImage.onload = () => {
-        ctx.drawImage(qrImage, 0, 0, 300, 300);
-        
-        // Add white circle background for logo
-        const centerX = 150;
-        const centerY = 150;
-        const radius = 35;
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Draw Jupiter logo
-        const logo = new Image();
-        logo.crossOrigin = 'anonymous';
-        logo.onload = () => {
-          const logoSize = 60;
-          ctx.drawImage(logo, centerX - logoSize/2, centerY - logoSize/2, logoSize, logoSize);
-          setQrDataUrl(canvas.toDataURL());
-        };
-        logo.src = 'https://static.jup.ag/jup/icon.png';
-      };
-      qrImage.src = qrUrl;
+      // Try to connect to trigger URI generation
+      try {
+        await wallet.connect();
+      } catch (err) {
+        // Connection will happen via mobile scan
+        console.log('Waiting for mobile connection...');
+      }
       
     } catch (error) {
       console.error('Error generating QR code:', error);
