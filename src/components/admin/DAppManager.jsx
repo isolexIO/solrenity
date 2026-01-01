@@ -23,7 +23,8 @@ export default function DAppManager() {
     is_verified: false,
     is_featured: false,
     tvl: '',
-    users_24h: 0
+    users_24h: 0,
+    referral_code: ''
   });
 
   const { data: dapps = [] } = useQuery({
@@ -64,7 +65,8 @@ export default function DAppManager() {
       is_verified: false,
       is_featured: false,
       tvl: '',
-      users_24h: 0
+      users_24h: 0,
+      referral_code: ''
     });
     setEditingDApp(null);
     setShowForm(false);
@@ -166,6 +168,16 @@ export default function DAppManager() {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+
+                <div>
+                  <label className="text-white/70 text-sm mb-2 block">Referral Code</label>
+                  <Input
+                    value={formData.referral_code}
+                    onChange={(e) => setFormData({ ...formData, referral_code: e.target.value })}
+                    placeholder="e.g., refId=5pf6bw304tlc"
+                    className="bg-white/5 border-white/10 text-white"
+                  />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

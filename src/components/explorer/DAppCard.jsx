@@ -17,7 +17,15 @@ export default function DAppCard({ dapp, index = 0 }) {
 
   const handleClick = () => {
     if (dapp.url) {
-      window.open(dapp.url, '_blank', 'noopener,noreferrer');
+      let finalUrl = dapp.url;
+      
+      // Append referral code if available
+      if (dapp.referral_code) {
+        const separator = finalUrl.includes('?') ? '&' : '?';
+        finalUrl = `${finalUrl}${separator}${dapp.referral_code}`;
+      }
+      
+      window.open(finalUrl, '_blank', 'noopener,noreferrer');
     }
   };
 
