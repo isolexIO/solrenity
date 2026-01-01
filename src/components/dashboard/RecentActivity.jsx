@@ -117,7 +117,7 @@ export default function RecentActivity() {
                 <p className="text-white/40 text-sm">{activity.value}</p>
               </div>
               <a
-                href={`https://solscan.io/tx/${activity.fullSignature}`}
+                href={`https://www.orbmarkets.io/tx/${activity.fullSignature}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -96,7 +96,7 @@ export default function AddressExplorer() {
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
               <a
-                href={`https://solscan.io/account/${address}`}
+                href={`https://www.orbmarkets.io/address/${address}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -175,7 +175,7 @@ export default function AddressExplorer() {
                   </p>
                 </div>
                 <a
-                  href={`https://solscan.io/tx/${tx.signature}`}
+                  href={`https://www.orbmarkets.io/tx/${tx.signature}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
