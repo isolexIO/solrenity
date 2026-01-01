@@ -29,7 +29,7 @@ export default function Sidebar({ currentPage }) {
     <motion.aside
       initial={{ x: -80, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      className="fixed left-0 top-0 h-full w-20 lg:w-64 bg-[#0D0D14] border-r border-white/5 z-40 flex flex-col"
+      className="hidden sm:flex fixed left-0 top-0 h-full w-20 lg:w-64 bg-[#0D0D14] border-r border-white/5 z-40 flex-col"
     >
       {/* Logo */}
       <div className="p-4 lg:p-6 flex items-center gap-3">
