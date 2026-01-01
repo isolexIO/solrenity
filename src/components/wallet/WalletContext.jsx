@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
-import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
+import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
-import { clusterApiUrl } from '@solana/web3.js';
+import { clusterApiUrl, LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
 
@@ -15,6 +15,7 @@ export const useWallet = () => {
 
 const WalletContextProvider = ({ children }) => {
   const solanaWallet = useSolanaWallet();
+  const { connection } = useConnection();
   const [balance, setBalance] = useState(0);
   const [network, setNetwork] = useState('mainnet-beta');
   const [walletType, setWalletType] = useState(null);
@@ -36,32 +37,14 @@ const WalletContextProvider = ({ children }) => {
 
   const fetchBalance = async () => {
     try {
-      if (!solanaWallet.publicKey) return;
+      if (!solanaWallet.publicKey || !connection) return;
       
-      const endpoint = network === 'mainnet-beta' 
-        ? clusterApiUrl('mainnet-beta')
-        : network === 'devnet'
-        ? clusterApiUrl('devnet')
-        : clusterApiUrl('testnet');
-
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          jsonrpc: '2.0',
-          id: 1,
-          method: 'getBalance',
-          params: [solanaWallet.publicKey.toBase58()]
-        })
-      });
-
-      const data = await response.json();
-      if (data.result?.value !== undefined) {
-        const solBalance = data.result.value / 1e9;
-        setBalance(Number(solBalance.toFixed(4))); // Convert lamports to SOL with precision
-      }
+      const lamports = await connection.getBalance(solanaWallet.publicKey);
+      const solBalance = lamports / LAMPORTS_PER_SOL;
+      setBalance(Number(solBalance.toFixed(4)));
     } catch (error) {
       console.error('Error fetching balance:', error);
+      setBalance(0);
     }
   };
 
