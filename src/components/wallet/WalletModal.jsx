@@ -74,18 +74,18 @@ export default function WalletModal({ open, onClose }) {
     } catch (error) {
       console.error('Error connecting wallet:', error);
       
-      // On mobile, if wallet not installed, open the wallet's website
+      // On mobile, if wallet not installed, redirect to install or open app
       if (isMobile) {
         const deepLinks = {
-          'phantom': 'https://phantom.app/ul/browse/' + window.location.href + '?ref=solrenity',
+          'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
           'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
-          'backpack': 'https://backpack.app',
-          'jupiter': 'https://jup.ag'
+          'backpack': 'https://backpack.app/download',
+          'jupiter': 'https://wallet.jup.ag'
         };
         
         const link = deepLinks[walletId];
         if (link) {
-          window.location.href = link;
+          window.open(link, '_blank');
         }
       }
     }
