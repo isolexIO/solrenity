@@ -417,7 +417,7 @@ export default function SwapPanel({ compact = false }) {
       </Button>
 
       <p className="text-xs text-white/30 text-center mt-3">
-        Powered by Jupiter Aggregator
+        Powered by <a href="https://jup.ag/?refId=5pf6bw304tlc" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">Jupiter Aggregator</a>
       </p>
     </motion.div>
   );
