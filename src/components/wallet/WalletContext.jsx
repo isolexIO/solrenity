@@ -4,7 +4,8 @@ import {
   PhantomWalletAdapter, 
   SolflareWalletAdapter, 
   TorusWalletAdapter, 
-  LedgerWalletAdapter
+  LedgerWalletAdapter,
+  BackpackWalletAdapter
 } from '@solana/wallet-adapter-wallets';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
@@ -128,6 +129,7 @@ export const WalletProvider = ({ children }) => {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
+      new BackpackWalletAdapter(),
       new TorusWalletAdapter(),
       new LedgerWalletAdapter()
     ],

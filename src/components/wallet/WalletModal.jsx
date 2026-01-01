@@ -19,6 +19,13 @@ const wallets = [
     installed: isMobile || (typeof window !== 'undefined' && window.phantom?.solana?.isPhantom)
   },
   {
+    id: 'backpack',
+    name: 'Backpack',
+    icon: 'https://assets.backpack.app/backpack-icon.png',
+    color: 'from-red-500 to-red-700',
+    installed: isMobile || (typeof window !== 'undefined' && window.backpack?.isBackpack)
+  },
+  {
     id: 'solflare',
     name: 'Solflare',
     icon: 'https://solflare.com/assets/logo.svg',
@@ -34,6 +41,7 @@ export default function WalletModal({ open, onClose }) {
     try {
       const walletNames = {
         'phantom': 'Phantom',
+        'backpack': 'Backpack',
         'solflare': 'Solflare'
       };
       const walletName = walletNames[walletId] || 'Phantom';
@@ -65,6 +73,7 @@ export default function WalletModal({ open, onClose }) {
       if (isMobile) {
         const mobileLinks = {
           'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
+          'backpack': 'https://backpack.app',
           'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href)
         };
         
