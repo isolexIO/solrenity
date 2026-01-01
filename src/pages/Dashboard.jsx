@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import BalanceCard from '../components/dashboard/BalanceCard';
 import TokenList from '../components/dashboard/TokenList';
 import RecentActivity from '../components/dashboard/RecentActivity';
@@ -10,7 +11,7 @@ import NetworkStats from '../components/dashboard/NetworkStats';
 import StakingPanel from '../components/dashboard/StakingPanel';
 import { useWallet } from '../components/wallet/WalletContext';
 import WalletButton from '../components/wallet/WalletButton';
-import { Zap, Shield, Globe } from "lucide-react";
+import { Zap, Shield, Globe, Wallet, Coins } from "lucide-react";
 
 export default function Dashboard() {
   const { connected } = useWallet();
@@ -81,8 +82,26 @@ export default function Dashboard() {
         {/* Left Column - Balance & Tokens */}
         <div className="lg:col-span-2 space-y-6">
           <BalanceCard />
-          <StakingPanel />
-          <TokenList />
+
+          <Tabs defaultValue="tokens" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
+              <TabsTrigger value="tokens" className="data-[state=active]:bg-[#9945FF]">
+                <Coins className="w-4 h-4 mr-2" />
+                Tokens
+              </TabsTrigger>
+              <TabsTrigger value="staking" className="data-[state=active]:bg-[#9945FF]">
+                <Wallet className="w-4 h-4 mr-2" />
+                Staking
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="tokens" className="mt-6">
+              <TokenList />
+            </TabsContent>
+            <TabsContent value="staking" className="mt-6">
+              <StakingPanel />
+            </TabsContent>
+          </Tabs>
+
           <RecentActivity />
         </div>
 
