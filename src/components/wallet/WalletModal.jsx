@@ -46,7 +46,6 @@ export default function WalletModal({ open, onClose }) {
 
   const handleConnect = async (walletId) => {
     try {
-      // Select the wallet by name
       const walletNames = {
         'phantom': 'Phantom',
         'solflare': 'Solflare',
@@ -54,17 +53,40 @@ export default function WalletModal({ open, onClose }) {
         'jupiter': 'Jupiter Wallet'
       };
       const walletName = walletNames[walletId] || 'Phantom';
-      await wallet.select(walletName);
-      // Connection happens automatically after select
-      setTimeout(onClose, 500);
-    } catch (error) {
-      console.error('Error connecting:', error);
-      // If auto-connect fails, try manual connect
-      try {
+      
+      // Find the wallet adapter
+      const selectedWallet = wallet.wallets.find(w => w.adapter.name === walletName);
+      
+      if (selectedWallet) {
+        // Select the wallet
+        wallet.select(selectedWallet.adapter.name);
+        
+        // Wait a bit for selection to complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
+        // Try to connect
         await wallet.connect();
+        
         onClose();
-      } catch (err) {
-        console.error('Manual connect failed:', err);
+      } else {
+        throw new Error(`${walletName} not found`);
+      }
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+      
+      // On mobile, if wallet not installed, open the wallet's website
+      if (isMobile) {
+        const deepLinks = {
+          'phantom': 'https://phantom.app/ul/browse/' + window.location.href + '?ref=solrenity',
+          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
+          'backpack': 'https://backpack.app',
+          'jupiter': 'https://jup.ag'
+        };
+        
+        const link = deepLinks[walletId];
+        if (link) {
+          window.location.href = link;
+        }
       }
     }
   };
