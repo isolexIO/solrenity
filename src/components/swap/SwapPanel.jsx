@@ -258,11 +258,21 @@ export default function SwapPanel({ compact = false }) {
       <div className="bg-white/5 rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-white/50">You pay</span>
-          {quoteLoading && (
-            <span className="text-xs text-[#14F195] flex items-center gap-1">
-              <Loader2 className="w-3 h-3 animate-spin" /> Finding best rate...
-            </span>
-          )}
+          <div className="flex items-center gap-2">
+            {connected && (
+              <button
+                onClick={setMaxAmount}
+                className="text-xs text-[#9945FF] hover:text-[#14F195] font-semibold transition-colors"
+              >
+                MAX: {getMaxBalance().toFixed(4)}
+              </button>
+            )}
+            {quoteLoading && (
+              <span className="text-xs text-[#14F195] flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" /> Finding best rate...
+              </span>
+            )}
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <Select value={fromToken} onValueChange={setFromToken}>
