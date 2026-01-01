@@ -69,9 +69,9 @@ export default function WalletModal({ open, onClose }) {
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="bg-[#1A1A2E] border-white/10 text-white max-w-md">
+      <DialogContent className="bg-[#1A1A2E] border-white/10 text-white max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center mb-2">
+          <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
             Connect Wallet
           </DialogTitle>
           <p className="text-white/50 text-center text-sm">
@@ -87,21 +87,21 @@ export default function WalletModal({ open, onClose }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => handleConnect(wallet.id)}
-              className="flex items-center gap-4 p-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all duration-300 group"
+              className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl bg-white/5 hover:bg-white/10 active:bg-white/15 border border-white/5 hover:border-white/20 transition-all duration-300 group touch-manipulation"
             >
-              <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${wallet.color} flex items-center justify-center p-2.5`}>
+              <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${wallet.color} flex items-center justify-center p-2 sm:p-2.5 flex-shrink-0`}>
                 <img 
                   src={wallet.icon} 
                   alt={wallet.name}
                   className="w-full h-full object-contain"
                 />
               </div>
-              <div className="flex-1 text-left">
-                <h3 className="font-semibold text-white group-hover:text-[#14F195] transition-colors">
+              <div className="flex-1 text-left min-w-0">
+                <h3 className="font-semibold text-white group-hover:text-[#14F195] transition-colors text-sm sm:text-base">
                   {wallet.name}
                 </h3>
                 <p className="text-xs text-white/40">
-                  {wallet.installed ? 'Click to connect' : 'Not installed'}
+                  {wallet.installed ? 'Tap to connect' : 'Not installed'}
                 </p>
               </div>
               <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />

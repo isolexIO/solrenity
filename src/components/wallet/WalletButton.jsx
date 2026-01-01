@@ -29,10 +29,11 @@ export default function WalletButton() {
       <>
         <Button 
           onClick={() => setShowModal(true)}
-          className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white font-medium px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25"
+          className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 active:opacity-80 text-white font-medium px-4 sm:px-6 rounded-xl transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/25 touch-manipulation text-sm sm:text-base"
         >
-          <Wallet className="w-4 h-4 mr-2" />
-          Connect
+          <Wallet className="w-4 h-4 mr-1 sm:mr-2" />
+          <span className="hidden xs:inline">Connect</span>
+          <span className="xs:hidden">•••</span>
         </Button>
         <WalletModal open={showModal} onClose={() => setShowModal(false)} />
       </>
@@ -44,12 +45,12 @@ export default function WalletButton() {
       <DropdownMenuTrigger asChild>
         <Button 
           variant="outline" 
-          className="bg-white/5 border-white/10 hover:bg-white/10 text-white rounded-xl px-4 gap-2"
+          className="bg-white/5 border-white/10 hover:bg-white/10 active:bg-white/15 text-white rounded-xl px-2 sm:px-4 gap-1 sm:gap-2 touch-manipulation"
         >
           <div className="w-2 h-2 rounded-full bg-[#14F195] animate-pulse" />
-          <span className="font-mono text-sm">{publicKey}</span>
-          <span className="text-[#14F195] font-semibold">{balance.toFixed(2)} SOL</span>
-          <ChevronDown className="w-4 h-4 opacity-50" />
+          <span className="font-mono text-xs sm:text-sm hidden sm:inline">{publicKey}</span>
+          <span className="text-[#14F195] font-semibold text-xs sm:text-sm">{balance.toFixed(2)}</span>
+          <ChevronDown className="w-3 h-3 sm:w-4 sm:h-4 opacity-50" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent 
