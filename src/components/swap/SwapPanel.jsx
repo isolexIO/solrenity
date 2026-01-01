@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/select";
 import { ArrowDownUp, Settings, Info, Loader2, TrendingUp, Zap } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../../utils';
 import { useWallet } from '../wallet/WalletContext';
 import { base44 } from '@/api/base44Client';
 import { Transaction, VersionedTransaction } from '@solana/web3.js';
@@ -417,7 +419,7 @@ export default function SwapPanel({ compact = false }) {
       </Button>
 
       <p className="text-xs text-white/30 text-center mt-3">
-        Powered by <a href="https://jup.ag/?refId=5pf6bw304tlc" target="_blank" rel="noopener noreferrer" className="hover:text-white/50 transition-colors">Jupiter Aggregator</a>
+        Powered by <Link to={createPageUrl('Browser') + '?url=' + encodeURIComponent('https://jup.ag/?refId=5pf6bw304tlc')} className="hover:text-white/50 transition-colors">Jupiter Aggregator</Link>
       </p>
     </motion.div>
   );

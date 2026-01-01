@@ -1,10 +1,14 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink, Shield, Users, TrendingUp } from "lucide-react";
 import { motion } from 'framer-motion';
+import { createPageUrl } from '../../utils';
 
 export default function DAppCard({ dapp, index = 0 }) {
+  const navigate = useNavigate();
+  
   const categoryColors = {
     defi: 'bg-[#14F195]/20 text-[#14F195] border-[#14F195]/30',
     nft: 'bg-[#9945FF]/20 text-[#9945FF] border-[#9945FF]/30',
@@ -25,7 +29,7 @@ export default function DAppCard({ dapp, index = 0 }) {
         finalUrl = `${finalUrl}${separator}${dapp.referral_code}`;
       }
       
-      window.open(finalUrl, '_blank', 'noopener,noreferrer');
+      navigate(createPageUrl('Browser') + '?url=' + encodeURIComponent(finalUrl));
     }
   };
 

@@ -2,6 +2,8 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownLeft, Repeat, ExternalLink } from "lucide-react";
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../../utils';
 import { useWallet } from '../wallet/WalletContext';
 import { base44 } from '@/api/base44Client';
 
@@ -116,13 +118,9 @@ export default function RecentActivity() {
                 <p className="text-white font-medium">{activity.amount}</p>
                 <p className="text-white/40 text-sm">{activity.value}</p>
               </div>
-              <a
-                href={`https://www.orbmarkets.io/tx/${activity.fullSignature}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link to={createPageUrl('Browser') + '?url=' + encodeURIComponent(`https://www.orbmarkets.io/tx/${activity.fullSignature}`)}>
                 <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-[#9945FF] transition-colors" />
-              </a>
+              </Link>
             </div>
           </motion.div>
         ))}

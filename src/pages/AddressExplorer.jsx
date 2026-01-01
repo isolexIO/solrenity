@@ -95,11 +95,7 @@ export default function AddressExplorer() {
               >
                 {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
               </Button>
-              <a
-                href={`https://www.orbmarkets.io/address/${address}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <Link to={createPageUrl('Browser') + '?url=' + encodeURIComponent(`https://www.orbmarkets.io/address/${address}`)}>
                 <Button
                   variant="ghost"
                   size="icon"
@@ -107,7 +103,7 @@ export default function AddressExplorer() {
                 >
                   <ExternalLink className="w-4 h-4" />
                 </Button>
-              </a>
+              </Link>
             </div>
           </div>
         </div>
@@ -174,11 +170,7 @@ export default function AddressExplorer() {
                     {tx.signature}
                   </p>
                 </div>
-                <a
-                  href={`https://www.orbmarkets.io/tx/${tx.signature}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <Link to={createPageUrl('Browser') + '?url=' + encodeURIComponent(`https://www.orbmarkets.io/tx/${tx.signature}`)}>
                   <Button
                     variant="ghost"
                     size="icon"
@@ -186,7 +178,7 @@ export default function AddressExplorer() {
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Button>
-                </a>
+                </Link>
               </motion.div>
             ))}
           </div>

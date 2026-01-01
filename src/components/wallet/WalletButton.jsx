@@ -8,6 +8,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Wallet, ChevronDown, LogOut, Copy, ExternalLink, Check } from "lucide-react";
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '../../utils';
 import { useWallet } from './WalletContext';
 import WalletModal from './WalletModal';
 
@@ -61,13 +63,12 @@ export default function WalletButton() {
           {copied ? <Check className="w-4 h-4 mr-2 text-[#14F195]" /> : <Copy className="w-4 h-4 mr-2" />}
           {copied ? 'Copied!' : 'Copy Address'}
         </DropdownMenuItem>
-        <DropdownMenuItem 
-          onClick={() => window.open(`https://www.orbmarkets.io/address/${publicKeyFull}`, '_blank')}
-          className="cursor-pointer hover:bg-white/5"
-        >
-          <ExternalLink className="w-4 h-4 mr-2" />
-          View on Explorer
-        </DropdownMenuItem>
+        <Link to={createPageUrl('Browser') + '?url=' + encodeURIComponent(`https://www.orbmarkets.io/address/${publicKeyFull}`)}>
+          <DropdownMenuItem className="cursor-pointer hover:bg-white/5">
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View on Explorer
+          </DropdownMenuItem>
+        </Link>
         <DropdownMenuSeparator className="bg-white/10" />
         <DropdownMenuItem 
           onClick={disconnect} 
