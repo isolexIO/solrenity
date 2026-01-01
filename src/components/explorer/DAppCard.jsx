@@ -24,19 +24,19 @@ export default function DAppCard({ dapp, index = 0 }) {
       <Card className="bg-[#1A1A2E] border-white/10 overflow-hidden hover:border-[#9945FF]/50 transition-all duration-300 group cursor-pointer h-full">
         <div className="p-5">
           <div className="flex items-start gap-4 mb-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#9945FF]/30 to-[#14F195]/30 flex items-center justify-center text-2xl overflow-hidden">
+            <div className="w-14 h-14 rounded-xl bg-white/5 flex items-center justify-center p-2 overflow-hidden">
               {dapp.logo_url ? (
                 <img 
                   src={dapp.logo_url} 
                   alt={dapp.name}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   onError={(e) => {
                     e.target.style.display = 'none';
                     e.target.nextSibling.style.display = 'flex';
                   }}
                 />
               ) : null}
-              <div className={`w-full h-full items-center justify-center text-white font-bold ${dapp.logo_url ? 'hidden' : 'flex'}`}>
+              <div className={`w-full h-full items-center justify-center text-white font-bold bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-lg ${dapp.logo_url ? 'hidden' : 'flex'}`}>
                 {dapp.name?.[0] || 'D'}
               </div>
             </div>
