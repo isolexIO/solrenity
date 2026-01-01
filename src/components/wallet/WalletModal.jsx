@@ -50,12 +50,24 @@ export default function WalletModal({ open, onClose }) {
 
   const generateJupiterQR = async () => {
     try {
-      // Simple Jupiter deep link that the app can scan
-      const appUrl = window.location.href;
-      const jupiterDeepLink = `https://jup.ag/app?redirect=${encodeURIComponent(appUrl)}`;
+      const appUrl = window.location.origin;
+      const appName = 'SOLrenity';
       
-      // Generate QR code with high error correction to allow logo overlay
-      const qrUrl = await QRCode.toDataURL(jupiterDeepLink, {
+      // Create Solana Mobile Wallet Adapter connection URI
+      const connectionPayload = {
+        dapp: {
+          name: appName,
+          url: appUrl,
+          icon: 'https://solana.com/src/img/branding/solanaLogoMark.svg'
+        }
+      };
+      
+      // Encode as base64 for QR
+      const encodedPayload = btoa(JSON.stringify(connectionPayload));
+      const solanaUri = `solana:${appUrl}?connect=${encodedPayload}`;
+      
+      // Generate QR code
+      const qrUrl = await QRCode.toDataURL(solanaUri, {
         width: 300,
         margin: 2,
         errorCorrectionLevel: 'H',
@@ -65,18 +77,17 @@ export default function WalletModal({ open, onClose }) {
         }
       });
       
-      // Create canvas to add Jupiter logo in center
+      // Create canvas to add Jupiter logo
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       canvas.width = 300;
       canvas.height = 300;
       
-      // Draw QR code
       const qrImage = new Image();
       qrImage.onload = () => {
         ctx.drawImage(qrImage, 0, 0, 300, 300);
         
-        // Add white circle background for logo
+        // Add white circle for logo
         const centerX = 150;
         const centerY = 150;
         const radius = 35;
@@ -95,7 +106,6 @@ export default function WalletModal({ open, onClose }) {
           setQrDataUrl(canvas.toDataURL());
         };
         logo.onerror = () => {
-          // If logo fails to load, just use QR without logo
           setQrDataUrl(canvas.toDataURL());
         };
         logo.src = 'https://static.jup.ag/jup/icon.png';
