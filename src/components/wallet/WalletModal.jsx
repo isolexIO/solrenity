@@ -8,34 +8,36 @@ import {
 import { useWallet } from './WalletContext';
 import { motion } from 'framer-motion';
 
+const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
 const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
     icon: 'https://avatars.githubusercontent.com/u/78782331?s=200&v=4',
     color: 'from-purple-600 to-purple-900',
-    installed: typeof window !== 'undefined' && window.solana?.isPhantom
+    installed: isMobile || (typeof window !== 'undefined' && window.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
     icon: 'https://solflare.com/assets/logo.svg',
     color: 'from-orange-500 to-orange-700',
-    installed: typeof window !== 'undefined' && window.solflare?.isSolflare
+    installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
   {
     id: 'backpack',
     name: 'Backpack',
     icon: 'https://backpack.app/icon512_rounded.png',
     color: 'from-red-600 to-red-800',
-    installed: typeof window !== 'undefined' && window.backpack
+    installed: isMobile || (typeof window !== 'undefined' && window.backpack)
   },
   {
     id: 'jupiter',
     name: 'Jupiter',
     icon: 'https://static.jup.ag/jup/icon.png',
     color: 'from-green-500 to-green-700',
-    installed: typeof window !== 'undefined' && window.jupiter
+    installed: isMobile || (typeof window !== 'undefined' && window.jupiter)
   }
 ];
 
