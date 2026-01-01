@@ -39,7 +39,7 @@ export default function WalletModal({ open, onClose }) {
       const walletName = walletNames[walletId] || 'Phantom';
       
       // Find the wallet adapter
-      const selectedWallet = wallet.wallets.find(w => 
+      const selectedWallet = wallet?.wallets?.find(w => 
         w.adapter.name.toLowerCase().includes(walletId) || 
         w.adapter.name === walletName
       );
