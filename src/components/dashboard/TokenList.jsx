@@ -46,14 +46,11 @@ export default function TokenList() {
       
       if (response.data.tokens) {
         response.data.tokens.forEach(token => {
-          // Only add tokens with balance > 0 and value > 0
-          if (token.balance > 0 && (token.valueUsd > 0 || token.price > 0)) {
-            tokenList.push({
-              ...token,
-              change: 0,
-              color: '#9945FF'
-            });
-          }
+          tokenList.push({
+            ...token,
+            change: 0,
+            color: '#9945FF'
+          });
         });
       }
 
