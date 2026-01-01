@@ -50,7 +50,9 @@ export default function WalletModal({ open, onClose }) {
 
   const generateJupiterQR = async () => {
     try {
-      const connectUrl = `https://jup.ag/connect?dapp=${encodeURIComponent(window.location.origin)}&return=${encodeURIComponent(window.location.href)}`;
+      // Jupiter Mobile uses deep link format
+      const appUrl = window.location.href;
+      const connectUrl = `solana:${appUrl}`;
       
       // Generate QR code with high error correction to allow logo overlay
       const qrUrl = await QRCode.toDataURL(connectUrl, {
