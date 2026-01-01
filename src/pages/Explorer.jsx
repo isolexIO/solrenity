@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Filter, TrendingUp } from "lucide-react";
+import { Search, Filter, TrendingUp, Loader2 } from "lucide-react";
 import DAppCard from '../components/explorer/DAppCard';
 import CategoryFilter from '../components/explorer/CategoryFilter';
 import { base44 } from '@/api/base44Client';
@@ -11,6 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 export default function Explorer() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [resolving, setResolving] = useState(false);
 
   const { data: allDApps = [] } = useQuery({
     queryKey: ['dapps'],
@@ -18,9 +19,30 @@ export default function Explorer() {
     initialData: [],
   });
 
+  const handleSearchChange = async (value) => {
+    setSearchQuery(value);
+    
+    // Check if it's an SNS domain
+    if (value.includes('.sol')) {
+      setResolving(true);
+      try {
+        const response = await base44.functions.invoke('resolveSNS', { domain: value });
+        if (response.data.address) {
+          // Update search to use the resolved address
+          setSearchQuery(response.data.address);
+        }
+      } catch (error) {
+        console.log('SNS resolution failed, searching as normal text');
+      } finally {
+        setResolving(false);
+      }
+    }
+  };
+
   const filteredDApps = allDApps.filter(dapp => {
     const matchesSearch = dapp.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         dapp.description?.toLowerCase().includes(searchQuery.toLowerCase());
+                         dapp.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         dapp.url?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || dapp.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
@@ -48,11 +70,15 @@ export default function Explorer() {
       >
         <div className="flex flex-col md:flex-row gap-4">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+            {resolving ? (
+              <Loader2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9945FF] animate-spin" />
+            ) : (
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
+            )}
             <Input
-              placeholder="Search dApps, protocols, or program IDs..."
+              placeholder="Search dApps, protocols, SNS domains (.sol)..."
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(e) => handleSearchChange(e.target.value)}
               className="pl-12 h-12 bg-white/5 border-white/10 text-white rounded-xl focus:border-[#9945FF] placeholder:text-white/30"
             />
           </div>

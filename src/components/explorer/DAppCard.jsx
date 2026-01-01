@@ -15,11 +15,18 @@ export default function DAppCard({ dapp, index = 0 }) {
     infrastructure: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/30',
   };
 
+  const handleClick = () => {
+    if (dapp.url) {
+      window.open(dapp.url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
+      onClick={handleClick}
     >
       <Card className="bg-[#1A1A2E] border-white/10 overflow-hidden hover:border-[#9945FF]/50 transition-all duration-300 group cursor-pointer h-full">
         <div className="p-5">
