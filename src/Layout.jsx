@@ -35,7 +35,7 @@ export default function Layout({ children, currentPageName }) {
                     {/* Solana Logo */}
                     <div className="absolute inset-0 flex items-center justify-center p-6">
                       <img 
-                        src="https://solana.com/_next/static/media/logotype.e4df684f.svg" 
+                        src="https://cryptologos.cc/logos/solana-sol-logo.svg" 
                         alt="Solana"
                         className="w-full h-full object-contain drop-shadow-2xl animate-pulse"
                         style={{ animationDuration: '4s' }}
