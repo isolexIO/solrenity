@@ -81,8 +81,8 @@ export default function SwapPanel({ compact = false }) {
     setFromAmount(maxBalance.toString());
   };
   
-  const toAmount = quoteData?.outputAmount 
-    ? (parseInt(quoteData.outputAmount) / Math.pow(10, toTokenData?.decimals || 6)).toFixed(6)
+  const toAmount = quoteData?.outAmount 
+    ? (parseInt(quoteData.outAmount) / Math.pow(10, toTokenData?.decimals || 6)).toFixed(6)
     : '';
 
   // Get quote when amount or tokens change
