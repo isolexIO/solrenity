@@ -2,16 +2,52 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from 'framer-motion';
-
-const tokens = [
-  { symbol: 'SOL', name: 'Solana', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', balance: 12.58, price: 172.50, change: 5.42, color: '#14F195' },
-  { symbol: 'USDC', name: 'USD Coin', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', balance: 450.00, price: 1.00, change: 0.01, color: '#2775CA' },
-  { symbol: 'BONK', name: 'Bonk', logo: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I', balance: 15000000, price: 0.000028, change: 12.5, color: '#F7931A' },
-  { symbol: 'JUP', name: 'Jupiter', logo: 'https://static.jup.ag/jup/icon.png', balance: 200, price: 1.25, change: -2.3, color: '#9945FF' },
-  { symbol: 'RAY', name: 'Raydium', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', balance: 50, price: 2.80, change: 8.1, color: '#6E42EE' },
-];
+import { useWallet } from '../wallet/WalletContext';
 
 export default function TokenList() {
+  const { balance, connected } = useWallet();
+  const [tokens, setTokens] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (connected) {
+      fetchTokens();
+    }
+  }, [connected, balance]);
+
+  const fetchTokens = async () => {
+    try {
+      // Fetch SOL price
+      const priceResponse = await fetch('https://price.jup.ag/v4/price?ids=SOL');
+      const priceData = await priceResponse.json();
+      const solPrice = priceData.data?.SOL?.price || 0;
+
+      // Show only SOL for now (real balance from wallet)
+      const tokenList = [
+        {
+          symbol: 'SOL',
+          name: 'Solana',
+          logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+          balance: balance,
+          price: solPrice,
+          change: 0,
+          color: '#14F195'
+        }
+      ];
+
+      setTokens(tokenList);
+    } catch (error) {
+      console.error('Error fetching tokens:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!connected || loading) {
+  if (!connected || loading) {
+    return null;
+  }
+
   return (
     <Card className="bg-[#1A1A2E] border-white/10 overflow-hidden">
       <div className="p-4 border-b border-white/5">

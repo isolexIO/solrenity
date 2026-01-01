@@ -2,47 +2,8 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownLeft, Repeat, ExternalLink } from "lucide-react";
 import { motion } from 'framer-motion';
-
-const activities = [
-  { 
-    type: 'swap', 
-    from: 'SOL', 
-    to: 'USDC', 
-    amount: '2.5', 
-    value: '$431.25',
-    time: '2 mins ago',
-    status: 'confirmed',
-    signature: '5Gk...demo'
-  },
-  { 
-    type: 'receive', 
-    token: 'SOL', 
-    amount: '5.0',
-    value: '$862.50',
-    time: '15 mins ago',
-    status: 'confirmed',
-    signature: '3Fx...demo'
-  },
-  { 
-    type: 'send', 
-    token: 'BONK', 
-    amount: '1,000,000',
-    value: '$28.00',
-    time: '1 hour ago',
-    status: 'confirmed',
-    signature: '7Hm...demo'
-  },
-  { 
-    type: 'swap', 
-    from: 'USDC', 
-    to: 'JUP', 
-    amount: '100',
-    value: '$100.00',
-    time: '3 hours ago',
-    status: 'confirmed',
-    signature: '9Kp...demo'
-  },
-];
+import { useWallet } from '../wallet/WalletContext';
+import { base44 } from '@/api/base44Client';
 
 const getActivityIcon = (type) => {
   switch (type) {
@@ -63,6 +24,53 @@ const getActivityColor = (type) => {
 };
 
 export default function RecentActivity() {
+  const { connected, publicKeyFull } = useWallet();
+  const [activities, setActivities] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    if (connected && publicKeyFull) {
+      fetchActivities();
+    }
+  }, [connected, publicKeyFull]);
+
+  const fetchActivities = async () => {
+    try {
+      const response = await base44.functions.invoke('getSolanaTransactions', { 
+        address: publicKeyFull 
+      });
+      
+      if (response.data.transactions) {
+        const formatted = response.data.transactions.slice(0, 5).map(tx => ({
+          type: tx.type || 'swap',
+          signature: `${tx.signature.slice(0, 4)}...${tx.signature.slice(-4)}`,
+          fullSignature: tx.signature,
+          time: new Date(tx.timestamp * 1000).toLocaleString(),
+          status: 'confirmed',
+          amount: tx.amount || '-',
+          value: '-'
+        }));
+        setActivities(formatted);
+      }
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!connected || loading) {
+    return null;
+  }
+
+  if (activities.length === 0) {
+    return (
+      <Card className="bg-[#1A1A2E] border-white/10 p-6 text-center">
+        <p className="text-white/50">No recent activity</p>
+      </Card>
+    );
+  }
+
   return (
     <Card className="bg-[#1A1A2E] border-white/10 overflow-hidden">
       <div className="p-4 border-b border-white/5 flex items-center justify-between">
@@ -108,7 +116,13 @@ export default function RecentActivity() {
                 <p className="text-white font-medium">{activity.amount}</p>
                 <p className="text-white/40 text-sm">{activity.value}</p>
               </div>
-              <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-[#9945FF] transition-colors" />
+              <a
+                href={`https://solscan.io/tx/${activity.fullSignature}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink className="w-4 h-4 text-white/20 group-hover:text-[#9945FF] transition-colors" />
+              </a>
             </div>
           </motion.div>
         ))}
