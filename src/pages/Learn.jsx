@@ -3,9 +3,11 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { motion } from 'framer-motion';
-import { BookOpen, Lock, CheckCircle2, Clock, ArrowRight, Zap, Shield, Coins, Code, Users, TrendingUp } from 'lucide-react';
+import { BookOpen, Lock, CheckCircle2, Clock, ArrowRight, Zap, Shield, Coins, Code, Users, TrendingUp, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '../utils';
+import LessonViewer from '../components/learn/LessonViewer';
+import { courseContent } from '../components/learn/courseContent';
 
 const modules = [
   {
@@ -133,12 +135,93 @@ const modules = [
 
 export default function Learn() {
   const [selectedLevel, setSelectedLevel] = React.useState('All');
+  const [selectedModule, setSelectedModule] = React.useState(null);
+  const [currentLessonIndex, setCurrentLessonIndex] = React.useState(0);
+  const [completedLessons, setCompletedLessons] = React.useState({});
   
   const levels = ['All', 'Beginner', 'Intermediate', 'Advanced'];
   
   const filteredModules = selectedLevel === 'All' 
     ? modules 
     : modules.filter(m => m.level === selectedLevel);
+
+  const handleStartModule = (moduleId) => {
+    setSelectedModule(moduleId);
+    setCurrentLessonIndex(0);
+  };
+
+  const handleNextLesson = () => {
+    const module = courseContent[selectedModule];
+    if (currentLessonIndex < module.lessons.length - 1) {
+      setCurrentLessonIndex(currentLessonIndex + 1);
+    }
+  };
+
+  const handlePreviousLesson = () => {
+    if (currentLessonIndex > 0) {
+      setCurrentLessonIndex(currentLessonIndex - 1);
+    }
+  };
+
+  const handleCompleteModule = () => {
+    setCompletedLessons({
+      ...completedLessons,
+      [selectedModule]: true
+    });
+    setSelectedModule(null);
+    setCurrentLessonIndex(0);
+  };
+
+  const handleBackToModules = () => {
+    setSelectedModule(null);
+    setCurrentLessonIndex(0);
+  };
+
+  if (selectedModule) {
+    const module = courseContent[selectedModule];
+    const currentLesson = module.lessons[currentLessonIndex];
+    
+    return (
+      <div className="max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6"
+        >
+          <Button
+            variant="ghost"
+            onClick={handleBackToModules}
+            className="text-white/60 hover:text-white hover:bg-white/5 mb-4"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Modules
+          </Button>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">
+                {modules.find(m => m.id === selectedModule)?.title}
+              </h1>
+              <p className="text-white/60">
+                Lesson {currentLessonIndex + 1} of {module.lessons.length}
+              </p>
+            </div>
+            <Badge className="bg-[#9945FF]/20 text-[#9945FF]">
+              {modules.find(m => m.id === selectedModule)?.level}
+            </Badge>
+          </div>
+        </motion.div>
+
+        <LessonViewer
+          lesson={currentLesson}
+          onNext={handleNextLesson}
+          onPrevious={handlePreviousLesson}
+          onComplete={handleCompleteModule}
+          isFirst={currentLessonIndex === 0}
+          isLast={currentLessonIndex === module.lessons.length - 1}
+        />
+      </div>
+    );
+  }
 
   const getLevelColor = (level) => {
     switch(level) {
@@ -261,10 +344,10 @@ export default function Learn() {
 
                 {/* Start Button */}
                 <Button 
+                  onClick={() => handleStartModule(module.id)}
                   className="w-full bg-[#9945FF] hover:bg-[#9945FF]/90 text-white group-hover:bg-[#14F195] group-hover:text-black transition-colors"
-                  disabled
                 >
-                  <span>Coming Soon</span>
+                  <span>{completedLessons[module.id] ? 'Review Module' : 'Start Learning'}</span>
                   <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
