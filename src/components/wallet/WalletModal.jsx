@@ -24,20 +24,6 @@ const wallets = [
     icon: 'https://solflare.com/assets/logo.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
-  },
-  {
-    id: 'backpack',
-    name: 'Backpack',
-    icon: 'https://www.backpack.app/_next/image?url=%2Fbackpack-logo.png&w=64&q=75',
-    color: 'from-red-600 to-red-800',
-    installed: isMobile || (typeof window !== 'undefined' && window.backpack)
-  },
-  {
-    id: 'jupiter',
-    name: 'Jupiter',
-    icon: 'https://station.jup.ag/favicon.svg',
-    color: 'from-green-500 to-green-700',
-    installed: isMobile || (typeof window !== 'undefined' && window.jupiter)
   }
 ];
 
@@ -48,9 +34,7 @@ export default function WalletModal({ open, onClose }) {
     try {
       const walletNames = {
         'phantom': 'Phantom',
-        'solflare': 'Solflare',
-        'backpack': 'Backpack',
-        'jupiter': 'Jupiter'
+        'solflare': 'Solflare'
       };
       const walletName = walletNames[walletId] || 'Phantom';
       
@@ -81,9 +65,7 @@ export default function WalletModal({ open, onClose }) {
       if (isMobile) {
         const mobileLinks = {
           'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
-          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
-          'backpack': 'https://backpack.app/download',
-          'jupiter': 'https://station.jup.ag'
+          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href)
         };
         
         const link = mobileLinks[walletId];
