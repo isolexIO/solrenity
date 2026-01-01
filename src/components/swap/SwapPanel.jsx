@@ -26,9 +26,9 @@ const tokens = [
 
 export default function SwapPanel({ compact = false }) {
   const walletContext = useWallet();
-  const { connected, publicKeyFull, wallet } = walletContext;
+  const { connected, publicKeyFull, wallet, balance } = walletContext;
   
-  console.log('SwapPanel - Wallet state:', { connected, publicKeyFull: publicKeyFull?.slice(0, 8) });
+  console.log('SwapPanel - Wallet state:', { connected, publicKeyFull: publicKeyFull?.slice(0, 8), balance });
   const [fromToken, setFromToken] = useState('SOL');
   const [toToken, setToToken] = useState('USDC');
   const [fromAmount, setFromAmount] = useState('');
@@ -38,9 +38,48 @@ export default function SwapPanel({ compact = false }) {
   const [quoteData, setQuoteData] = useState(null);
   const [quoteLoading, setQuoteLoading] = useState(false);
   const [routeInfo, setRouteInfo] = useState(null);
+  const [tokenBalances, setTokenBalances] = useState({});
 
   const fromTokenData = tokens.find(t => t.symbol === fromToken);
   const toTokenData = tokens.find(t => t.symbol === toToken);
+
+  // Fetch token balances when wallet connects
+  React.useEffect(() => {
+    if (connected && publicKeyFull) {
+      fetchTokenBalances();
+    }
+  }, [connected, publicKeyFull]);
+
+  const fetchTokenBalances = async () => {
+    try {
+      const response = await base44.functions.invoke('getWalletTokens', { 
+        walletAddress: publicKeyFull 
+      });
+      
+      if (response.data.tokens) {
+        const balances = { 'SOL': balance };
+        response.data.tokens.forEach(token => {
+          balances[token.symbol] = token.balance || 0;
+        });
+        setTokenBalances(balances);
+      }
+    } catch (error) {
+      console.error('Error fetching token balances:', error);
+    }
+  };
+
+  const getMaxBalance = () => {
+    if (fromToken === 'SOL') {
+      // Leave 0.01 SOL for transaction fees
+      return Math.max(0, balance - 0.01);
+    }
+    return tokenBalances[fromToken] || 0;
+  };
+
+  const setMaxAmount = () => {
+    const maxBalance = getMaxBalance();
+    setFromAmount(maxBalance.toString());
+  };
   
   const toAmount = quoteData?.outputAmount 
     ? (parseInt(quoteData.outputAmount) / Math.pow(10, toTokenData?.decimals || 6)).toFixed(6)
