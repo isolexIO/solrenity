@@ -12,14 +12,16 @@ import { useWallet } from './WalletContext';
 import WalletModal from './WalletModal';
 
 export default function WalletButton() {
-  const { connected, publicKey, balance, disconnect } = useWallet();
+  const { connected, publicKey, publicKeyFull, balance, disconnect } = useWallet();
   const [showModal, setShowModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const copyAddress = () => {
-    navigator.clipboard.writeText(publicKey);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (publicKeyFull) {
+      navigator.clipboard.writeText(publicKeyFull);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   if (!connected) {

@@ -8,11 +8,32 @@ import { Button } from "@/components/ui/button";
 export default function BalanceCard() {
   const { balance, connected } = useWallet();
   const [hidden, setHidden] = React.useState(false);
+  const [solPrice, setSolPrice] = React.useState(172.50);
   
-  const solPrice = 172.50;
   const totalUsd = balance * solPrice;
   const change24h = 5.42;
   const isPositive = change24h > 0;
+
+  React.useEffect(() => {
+    // Fetch real SOL price
+    const fetchPrice = async () => {
+      try {
+        const response = await fetch('https://price.jup.ag/v4/price?ids=SOL');
+        const data = await response.json();
+        if (data.data?.SOL?.price) {
+          setSolPrice(data.data.SOL.price);
+        }
+      } catch (error) {
+        console.error('Error fetching SOL price:', error);
+      }
+    };
+    
+    if (connected) {
+      fetchPrice();
+      const interval = setInterval(fetchPrice, 60000); // Update every minute
+      return () => clearInterval(interval);
+    }
+  }, [connected]);
 
   return (
     <motion.div

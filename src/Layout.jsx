@@ -2,10 +2,12 @@ import React from 'react';
 import { WalletProvider } from './components/wallet/WalletContext';
 import Sidebar from './components/navigation/Sidebar';
 import TopBar from './components/navigation/TopBar';
+import WalletAdapterStyles from './components/wallet/WalletAdapterStyles';
 
 export default function Layout({ children, currentPageName }) {
   return (
     <WalletProvider>
+      <WalletAdapterStyles />
       <div className="min-h-screen bg-[#0A0A10] text-white">
         <style>{`
           :root {

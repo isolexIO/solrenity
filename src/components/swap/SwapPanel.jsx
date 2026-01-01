@@ -43,10 +43,23 @@ export default function SwapPanel({ compact = false }) {
   };
 
   const handleSwap = async () => {
+    if (!connected || !fromAmount) return;
+    
     setLoading(true);
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    setLoading(false);
-    setFromAmount('');
+    try {
+      // This is a placeholder - real swap would need:
+      // 1. Get Jupiter quote
+      // 2. Get swap transaction
+      // 3. Sign with wallet
+      // 4. Send transaction
+      alert('Swap functionality requires wallet signing. This is a demo showing the UI flow.');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    } catch (error) {
+      console.error('Swap error:', error);
+      alert('Swap failed: ' + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

@@ -1,4 +1,7 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
+import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
+import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { clusterApiUrl } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
 
@@ -10,45 +13,127 @@ export const useWallet = () => {
   return context;
 };
 
-export const WalletProvider = ({ children }) => {
-  const [connected, setConnected] = useState(false);
-  const [walletType, setWalletType] = useState(null);
-  const [publicKey, setPublicKey] = useState(null);
+const WalletContextProvider = ({ children }) => {
+  const solanaWallet = useSolanaWallet();
   const [balance, setBalance] = useState(0);
   const [network, setNetwork] = useState('mainnet-beta');
+  const [walletType, setWalletType] = useState(null);
 
-  const connect = useCallback(async (type) => {
-    // Simulated wallet connection
-    setWalletType(type);
-    setPublicKey('7xKX...demo');
-    setBalance(12.5847);
-    setConnected(true);
-  }, []);
+  // Fetch balance when wallet connects
+  useEffect(() => {
+    if (solanaWallet.publicKey) {
+      fetchBalance();
+      
+      // Detect wallet type
+      if (solanaWallet.wallet?.adapter?.name) {
+        setWalletType(solanaWallet.wallet.adapter.name.toLowerCase());
+      }
+    } else {
+      setBalance(0);
+      setWalletType(null);
+    }
+  }, [solanaWallet.publicKey, network]);
 
-  const disconnect = useCallback(() => {
-    setConnected(false);
-    setWalletType(null);
-    setPublicKey(null);
-    setBalance(0);
-  }, []);
+  const fetchBalance = async () => {
+    try {
+      if (!solanaWallet.publicKey) return;
+      
+      const endpoint = network === 'mainnet-beta' 
+        ? clusterApiUrl('mainnet-beta')
+        : network === 'devnet'
+        ? clusterApiUrl('devnet')
+        : clusterApiUrl('testnet');
 
-  const switchNetwork = useCallback((net) => {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          id: 1,
+          method: 'getBalance',
+          params: [solanaWallet.publicKey.toBase58()]
+        })
+      });
+
+      const data = await response.json();
+      if (data.result?.value !== undefined) {
+        setBalance(data.result.value / 1e9); // Convert lamports to SOL
+      }
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+    }
+  };
+
+  const connect = async (type) => {
+    try {
+      await solanaWallet.connect();
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
+    }
+  };
+
+  const disconnect = async () => {
+    try {
+      await solanaWallet.disconnect();
+    } catch (error) {
+      console.error('Error disconnecting wallet:', error);
+    }
+  };
+
+  const switchNetwork = (net) => {
     setNetwork(net);
-  }, []);
+  };
 
   return (
     <WalletContext.Provider value={{
-      connected,
+      connected: solanaWallet.connected,
       walletType,
-      publicKey,
+      publicKey: solanaWallet.publicKey ? `${solanaWallet.publicKey.toBase58().slice(0, 4)}...${solanaWallet.publicKey.toBase58().slice(-4)}` : null,
+      publicKeyFull: solanaWallet.publicKey?.toBase58(),
       balance,
       network,
       connect,
       disconnect,
-      switchNetwork
+      switchNetwork,
+      signTransaction: solanaWallet.signTransaction,
+      signMessage: solanaWallet.signMessage,
+      wallet: solanaWallet
     }}>
       {children}
     </WalletContext.Provider>
+  );
+};
+
+export const WalletProvider = ({ children }) => {
+  const [network, setNetwork] = useState('mainnet-beta');
+  
+  const endpoint = useMemo(() => {
+    switch (network) {
+      case 'devnet':
+        return clusterApiUrl('devnet');
+      case 'testnet':
+        return clusterApiUrl('testnet');
+      default:
+        return clusterApiUrl('mainnet-beta');
+    }
+  }, [network]);
+
+  const wallets = useMemo(
+    () => [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+    ],
+    []
+  );
+
+  return (
+    <ConnectionProvider endpoint={endpoint}>
+      <SolanaWalletProvider wallets={wallets} autoConnect>
+        <WalletContextProvider>
+          {children}
+        </WalletContextProvider>
+      </SolanaWalletProvider>
+    </ConnectionProvider>
   );
 };
 

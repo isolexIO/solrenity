@@ -13,25 +13,15 @@ const wallets = [
     id: 'phantom',
     name: 'Phantom',
     icon: 'https://phantom.app/img/phantom-logo.svg',
-    color: 'from-purple-600 to-purple-900'
+    color: 'from-purple-600 to-purple-900',
+    installed: typeof window !== 'undefined' && window.solana?.isPhantom
   },
   {
     id: 'solflare',
     name: 'Solflare',
     icon: 'https://solflare.com/branding/solflare-logo.svg',
-    color: 'from-orange-500 to-orange-700'
-  },
-  {
-    id: 'backpack',
-    name: 'Backpack',
-    icon: 'https://backpack.app/icon.png',
-    color: 'from-red-500 to-red-700'
-  },
-  {
-    id: 'ledger',
-    name: 'Ledger',
-    icon: 'https://www.ledger.com/wp-content/uploads/2021/11/Ledger_favicon.png',
-    color: 'from-gray-600 to-gray-800'
+    color: 'from-orange-500 to-orange-700',
+    installed: typeof window !== 'undefined' && window.solflare?.isSolflare
   }
 ];
 
@@ -83,7 +73,9 @@ export default function WalletModal({ open, onClose }) {
                 <h3 className="font-semibold text-white group-hover:text-[#14F195] transition-colors">
                   {wallet.name}
                 </h3>
-                <p className="text-xs text-white/40">Click to connect</p>
+                <p className="text-xs text-white/40">
+                  {wallet.installed ? 'Click to connect' : 'Not installed'}
+                </p>
               </div>
               <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />
             </motion.button>
