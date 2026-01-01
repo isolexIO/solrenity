@@ -13,11 +13,16 @@ export default function Explorer() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [resolving, setResolving] = useState(false);
 
-  const { data: allDApps = [] } = useQuery({
-    queryKey: ['dapps'],
-    queryFn: () => base44.entities.DApp.list(),
-    initialData: [],
+  const { data: dappsResponse } = useQuery({
+    queryKey: ['live-dapps'],
+    queryFn: async () => {
+      const response = await base44.functions.invoke('getLiveDApps');
+      return response.data;
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
+
+  const allDApps = dappsResponse?.dapps || [];
 
   const handleSearchChange = async (value) => {
     setSearchQuery(value);
