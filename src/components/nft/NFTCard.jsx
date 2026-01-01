@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Heart, ExternalLink, MoreHorizontal } from "lucide-react";
 import { motion } from 'framer-motion';
 
@@ -20,6 +21,9 @@ export default function NFTCard({ nft, index = 0 }) {
             src={nft.image}
             alt={nft.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            onError={(e) => {
+              e.target.src = 'https://via.placeholder.com/400?text=NFT';
+            }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
           
@@ -36,9 +40,17 @@ export default function NFTCard({ nft, index = 0 }) {
             >
               <Heart className={`w-4 h-4 ${liked ? 'fill-current' : ''}`} />
             </button>
-            <button className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-white hover:bg-black/70 transition-colors">
-              <MoreHorizontal className="w-4 h-4" />
-            </button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-md text-white hover:bg-black/70"
+              onClick={(e) => {
+                e.stopPropagation();
+                window.open(nft.purchaseUrl, '_blank');
+              }}
+            >
+              <ExternalLink className="w-4 h-4" />
+            </Button>
           </div>
 
           {/* Collection Badge */}
@@ -61,7 +73,7 @@ export default function NFTCard({ nft, index = 0 }) {
               <p className="text-white/40 text-xs mb-1">Floor Price</p>
               <p className="text-white font-semibold flex items-center gap-1">
                 <span className="text-[#14F195]">◎</span>
-                {nft.price} SOL
+                {nft.price}
               </p>
             </div>
             
