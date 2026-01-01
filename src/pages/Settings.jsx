@@ -283,13 +283,17 @@ export default function Settings() {
         <Button
           variant="outline"
           className="text-white/50 border-white/10 hover:bg-white/5"
+          onClick={resetSettings}
         >
           <RotateCcw className="w-4 h-4 mr-2" />
           Reset to Defaults
         </Button>
-        <Button className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white">
-          <Save className="w-4 h-4 mr-2" />
-          Save Changes
+        <Button 
+          className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white"
+          onClick={saveSettings}
+        >
+          {saved ? <Check className="w-4 h-4 mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+          {saved ? 'Settings Saved!' : 'Save Changes'}
         </Button>
       </motion.div>
     </div>
