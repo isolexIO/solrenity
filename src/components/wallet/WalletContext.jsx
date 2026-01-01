@@ -6,7 +6,6 @@ import {
   TorusWalletAdapter, 
   LedgerWalletAdapter
 } from '@solana/wallet-adapter-wallets';
-import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
@@ -130,21 +129,9 @@ export const WalletProvider = ({ children }) => {
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
       new TorusWalletAdapter(),
-      new LedgerWalletAdapter(),
-      new WalletConnectWalletAdapter({
-        network: network === 'devnet' ? 'devnet' : 'mainnet-beta',
-        options: {
-          projectId: '8c49c7de6e8a4d5e9f1b0a3c2d7e6f5a',
-          metadata: {
-            name: 'SOLrenity',
-            description: 'Your Gateway to Solana',
-            url: window.location.origin,
-            icons: ['https://solana.com/src/img/branding/solanaLogoMark.svg']
-          }
-        }
-      })
+      new LedgerWalletAdapter()
     ],
-    [network]
+    []
   );
 
   return (
