@@ -7,6 +7,7 @@ import SwapPanel from '../components/swap/SwapPanel';
 import AirdropChecker from '../components/dashboard/AirdropChecker';
 import DeFiAccess from '../components/dashboard/DeFiAccess';
 import NetworkStats from '../components/dashboard/NetworkStats';
+import StakingPanel from '../components/dashboard/StakingPanel';
 import { useWallet } from '../components/wallet/WalletContext';
 import WalletButton from '../components/wallet/WalletButton';
 import { Zap, Shield, Globe } from "lucide-react";
@@ -80,6 +81,7 @@ export default function Dashboard() {
         {/* Left Column - Balance & Tokens */}
         <div className="lg:col-span-2 space-y-6">
           <BalanceCard />
+          <StakingPanel />
           <TokenList />
           <RecentActivity />
         </div>
