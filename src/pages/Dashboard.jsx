@@ -32,7 +32,7 @@ export default function Dashboard() {
             className="w-32 h-32 mx-auto mb-8"
           >
             <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/227d77bce_SOLrenity.png" 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/47c94b383_SOLrenity2.png" 
               alt="SOLrenity" 
               className="w-full h-full object-contain"
             />
