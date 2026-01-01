@@ -33,18 +33,16 @@ export default function Sidebar({ currentPage }) {
     >
       {/* Logo */}
       <div className="p-4 lg:p-6">
-        <div className="flex items-center justify-center lg:justify-start gap-4">
+        <div className="flex items-center justify-center lg:justify-start gap-3">
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/4776bd142_SOLrenity.png" 
             alt="SOLrenity" 
-            className="object-contain rounded-2xl flex-shrink-0"
+            className="object-contain rounded-2xl"
             style={{ width: '65px', height: '65px' }}
           />
-          <div className="hidden lg:block">
-            <p className="text-white/70 text-xs font-medium mb-1">Solana Ecosystem Browser</p>
-            <h3 className="text-white font-semibold text-sm mb-1">Solana Education Modules</h3>
-            <p className="text-white/50 text-xs leading-relaxed">Teaching basics of Solana Blockchain leading to advanced modules</p>
-          </div>
+        </div>
+        <div className="hidden lg:block mt-3 text-center">
+          <p className="text-white/70 text-xs font-medium">Solana Ecosystem Browser</p>
         </div>
       </div>
 
