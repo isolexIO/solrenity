@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,23 +22,52 @@ import {
   Key,
   Trash2,
   Save,
-  RotateCcw
+  RotateCcw,
+  Check
 } from "lucide-react";
 
+const DEFAULT_SETTINGS = {
+  network: 'mainnet-beta',
+  darkMode: true,
+  notifications: true,
+  autoApprove: false,
+  customRpc: '',
+  slippage: '0.5',
+  priority: 'medium',
+  telemetry: false,
+};
+
 export default function Settings() {
-  const [settings, setSettings] = useState({
-    network: 'mainnet-beta',
-    darkMode: true,
-    notifications: true,
-    autoApprove: false,
-    customRpc: '',
-    slippage: '0.5',
-    priority: 'medium',
-    telemetry: false,
-  });
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  const [saved, setSaved] = useState(false);
+
+  // Load settings from localStorage on mount
+  useEffect(() => {
+    const savedSettings = localStorage.getItem('solrenity_settings');
+    if (savedSettings) {
+      try {
+        setSettings(JSON.parse(savedSettings));
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      }
+    }
+  }, []);
 
   const updateSetting = (key, value) => {
     setSettings(prev => ({ ...prev, [key]: value }));
+  };
+
+  const saveSettings = () => {
+    localStorage.setItem('solrenity_settings', JSON.stringify(settings));
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  const resetSettings = () => {
+    setSettings(DEFAULT_SETTINGS);
+    localStorage.removeItem('solrenity_settings');
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
