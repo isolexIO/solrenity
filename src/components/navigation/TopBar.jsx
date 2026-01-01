@@ -15,12 +15,14 @@ export default function TopBar() {
   const handleNavigate = async (e) => {
     e.preventDefault();
     
+    if (!url.trim()) return;
+    
     // Check if it's an SNS domain
     if (url.endsWith('.sol')) {
       setResolving(true);
       try {
         const response = await base44.functions.invoke('resolveSNS', { domain: url });
-        if (response.data.resolved) {
+        if (response.data.address) {
           setUrl(response.data.address);
           console.log('Resolved SNS domain:', response.data);
         }
@@ -29,7 +31,23 @@ export default function TopBar() {
       } finally {
         setResolving(false);
       }
+      return;
     }
+    
+    // Check if it's a Web2 URL
+    const isWeb2Url = url.match(/^(https?:\/\/|www\.|[\w-]+\.(com|org|net|io|xyz|app|dev|tech|ai|co|me))/i);
+    
+    if (isWeb2Url) {
+      let finalUrl = url;
+      if (!url.startsWith('http')) {
+        finalUrl = url.startsWith('www.') ? `https://${url}` : `https://${url}`;
+      }
+      window.open(finalUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+    
+    // Otherwise, treat as search query
+    console.log('Searching for:', url);
   };
 
   return (
@@ -75,7 +93,7 @@ export default function TopBar() {
           </div>
           <Input
             type="text"
-            placeholder="Search dApps, addresses, or .sol domains..."
+            placeholder="Enter URL, search dApps, addresses, or .sol domains..."
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full bg-white/5 border-white/10 text-white pl-10 pr-10 h-10 rounded-xl focus:border-[#9945FF] focus:ring-[#9945FF]/20 placeholder:text-white/30"
