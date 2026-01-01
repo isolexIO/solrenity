@@ -46,7 +46,8 @@ export default function TopBar() {
         finalUrl = url.startsWith('www.') ? `https://${url}` : `https://${url}`;
       }
       // Navigate to Browser page with URL parameter
-      navigate(createPageUrl('Browser') + `?url=${encodeURIComponent(finalUrl)}`);
+      const browserPath = `/Browser?url=${encodeURIComponent(finalUrl)}`;
+      navigate(browserPath);
       return;
     }
     
