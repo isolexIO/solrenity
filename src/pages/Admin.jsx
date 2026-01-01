@@ -12,8 +12,10 @@ import { useWallet } from '../components/wallet/WalletContext';
 import { Button } from "@/components/ui/button";
 
 export default function Admin() {
-  const { connected } = useWallet();
+  const { connected, publicKeyFull } = useWallet();
   const [user, setUser] = useState(null);
+  
+  const ADMIN_ADDRESS = '8v235MTVaExbJzj24mCzYQZLQ8z4ktqNqyPYhreytpXB';
 
   React.useEffect(() => {
     const checkAdmin = async () => {
@@ -40,12 +42,12 @@ export default function Admin() {
     );
   }
 
-  if (user && user.role !== 'admin') {
+  if (publicKeyFull !== ADMIN_ADDRESS) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <Card className="bg-[#1A1A2E] border-white/10 p-8 text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Access Denied</h2>
-          <p className="text-white/50">You must be an admin to access this panel</p>
+          <p className="text-white/50">You must be an authorized admin to access this panel</p>
         </Card>
       </div>
     );
