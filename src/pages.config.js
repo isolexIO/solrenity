@@ -9,6 +9,7 @@ import NFTGallery from './pages/NFTGallery';
 import Settings from './pages/Settings';
 import Swap from './pages/Swap';
 import Learn from './pages/Learn';
+import TokenStats from './pages/TokenStats';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +25,7 @@ export const PAGES = {
     "Settings": Settings,
     "Swap": Swap,
     "Learn": Learn,
+    "TokenStats": TokenStats,
 }
 
 export const pagesConfig = {
