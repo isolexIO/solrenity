@@ -26,8 +26,10 @@ export default function TopBar() {
       try {
         const response = await base44.functions.invoke('resolveSNS', { domain: url });
         if (response.data.address) {
-          setUrl(response.data.address);
-          console.log('Resolved SNS domain:', response.data);
+          // Navigate to Address Explorer with resolved address and domain
+          const explorerPath = `/AddressExplorer?address=${encodeURIComponent(response.data.address)}&domain=${encodeURIComponent(url)}`;
+          navigate(explorerPath);
+          setUrl('');
         }
       } catch (error) {
         console.error('Error resolving SNS:', error);

@@ -6,6 +6,7 @@ import NFTGallery from './pages/NFTGallery';
 import Settings from './pages/Settings';
 import Swap from './pages/Swap';
 import Browser from './pages/Browser';
+import AddressExplorer from './pages/AddressExplorer';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Settings": Settings,
     "Swap": Swap,
     "Browser": Browser,
+    "AddressExplorer": AddressExplorer,
 }
 
 export const pagesConfig = {
