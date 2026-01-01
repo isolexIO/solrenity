@@ -44,10 +44,15 @@ const WalletContextProvider = ({ children }) => {
 
   const fetchBalance = async () => {
     try {
-      if (!solanaWallet.publicKey || !connection) return;
+      if (!solanaWallet.publicKey || !connection) {
+        console.log('No publicKey or connection available');
+        return;
+      }
       
+      console.log('Fetching balance for:', solanaWallet.publicKey.toBase58());
       const lamports = await connection.getBalance(solanaWallet.publicKey);
       const solBalance = lamports / LAMPORTS_PER_SOL;
+      console.log('Balance fetched:', solBalance, 'SOL');
       setBalance(Number(solBalance.toFixed(4)));
     } catch (error) {
       console.error('Error fetching balance:', error);
@@ -75,21 +80,26 @@ const WalletContextProvider = ({ children }) => {
     setNetwork(net);
   };
 
+  const contextValue = {
+    connected: solanaWallet.connected,
+    walletType,
+    publicKey: solanaWallet.publicKey ? `${solanaWallet.publicKey.toBase58().slice(0, 4)}...${solanaWallet.publicKey.toBase58().slice(-4)}` : null,
+    publicKeyFull: solanaWallet.publicKey?.toBase58(),
+    balance,
+    network,
+    connect,
+    disconnect,
+    switchNetwork,
+    signTransaction: solanaWallet.signTransaction,
+    signMessage: solanaWallet.signMessage,
+    wallet: solanaWallet,
+    refetchBalance: fetchBalance
+  };
+
+  console.log('WalletContext value:', { connected: contextValue.connected, balance: contextValue.balance, publicKey: contextValue.publicKey });
+
   return (
-    <WalletContext.Provider value={{
-      connected: solanaWallet.connected,
-      walletType,
-      publicKey: solanaWallet.publicKey ? `${solanaWallet.publicKey.toBase58().slice(0, 4)}...${solanaWallet.publicKey.toBase58().slice(-4)}` : null,
-      publicKeyFull: solanaWallet.publicKey?.toBase58(),
-      balance,
-      network,
-      connect,
-      disconnect,
-      switchNetwork,
-      signTransaction: solanaWallet.signTransaction,
-      signMessage: solanaWallet.signMessage,
-      wallet: solanaWallet
-    }}>
+    <WalletContext.Provider value={contextValue}>
       {children}
     </WalletContext.Provider>
   );
