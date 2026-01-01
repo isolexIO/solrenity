@@ -33,8 +33,12 @@ export default function Sidebar({ currentPage }) {
     >
       {/* Logo */}
       <div className="p-4 lg:p-6 flex items-center gap-3">
-        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center">
-          <span className="text-xl font-bold text-white">S</span>
+        <div className="w-10 h-10 flex items-center justify-center">
+          <img 
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/47c94b383_SOLrenity2.png" 
+            alt="SOLrenity" 
+            className="w-full h-full object-contain"
+          />
         </div>
         <div className="hidden lg:block">
           <h1 className="text-white font-bold text-lg">SOLrenity</h1>
