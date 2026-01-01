@@ -19,9 +19,13 @@ export default function NFTGallery() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchAllNFTs();
+    if (activeTab === 'listed') {
+      fetchAllNFTs();
+    }
     if (connected && publicKeyFull && activeTab === 'owned') {
       fetchWalletNFTs();
+    } else if (activeTab === 'owned') {
+      setLoading(false);
     }
   }, [connected, publicKeyFull, activeTab]);
 
@@ -61,7 +65,7 @@ export default function NFTGallery() {
     nft.collection?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const displayNfts = activeTab === 'owned' ? (connected ? nfts : []) : (activeTab === 'listed' ? allNfts : []);
+  const displayNfts = activeTab === 'owned' ? nfts : allNfts;
 
   return (
     <div className="space-y-4 md:space-y-6 pb-6">

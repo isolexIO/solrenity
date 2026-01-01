@@ -1,28 +1,31 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
-import { TrendingUp, TrendingDown } from "lucide-react";
+import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 import { motion } from 'framer-motion';
 import { useWallet } from '../wallet/WalletContext';
+import { base44 } from '@/api/base44Client';
 
 export default function TokenList() {
-  const { balance, connected } = useWallet();
+  const { balance, connected, publicKeyFull } = useWallet();
   const [tokens, setTokens] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    if (connected) {
+    if (connected && publicKeyFull) {
       fetchTokens();
     }
-  }, [connected, balance]);
+  }, [connected, publicKeyFull]);
 
   const fetchTokens = async () => {
     try {
+      setLoading(true);
+      
       // Fetch SOL price
       const priceResponse = await fetch('https://price.jup.ag/v4/price?ids=SOL');
       const priceData = await priceResponse.json();
       const solPrice = priceData.data?.SOL?.price || 0;
 
-      // Show only SOL for now (real balance from wallet)
+      // Add SOL
       const tokenList = [
         {
           symbol: 'SOL',
@@ -30,10 +33,26 @@ export default function TokenList() {
           logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
           balance: balance,
           price: solPrice,
+          valueUsd: balance * solPrice,
           change: 0,
           color: '#14F195'
         }
       ];
+
+      // Fetch SPL tokens
+      const response = await base44.functions.invoke('getWalletTokens', { 
+        walletAddress: publicKeyFull 
+      });
+      
+      if (response.data.tokens) {
+        response.data.tokens.forEach(token => {
+          tokenList.push({
+            ...token,
+            change: 0,
+            color: '#9945FF'
+          });
+        });
+      }
 
       setTokens(tokenList);
     } catch (error) {
@@ -43,7 +62,7 @@ export default function TokenList() {
     }
   };
 
-  if (!connected || loading) {
+  if (!connected) {
     return null;
   }
 
@@ -52,7 +71,12 @@ export default function TokenList() {
       <div className="p-4 border-b border-white/5">
         <h3 className="text-white font-semibold">Your Tokens</h3>
       </div>
-      <div className="divide-y divide-white/5">
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-6 h-6 text-[#9945FF] animate-spin" />
+        </div>
+      ) : (
+        <div className="divide-y divide-white/5">
         {tokens.map((token, index) => (
           <motion.div
             key={token.symbol}
@@ -81,25 +105,14 @@ export default function TokenList() {
                   {token.balance.toLocaleString()} {token.symbol}
                 </p>
                 <p className="text-white/40 text-sm">
-                  ${(token.balance * token.price).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  ${token.valueUsd?.toLocaleString(undefined, { maximumFractionDigits: 2 }) || (token.balance * token.price).toLocaleString(undefined, { maximumFractionDigits: 2 })}
                 </p>
-              </div>
-              <div className={`flex items-center gap-1 ${
-                token.change >= 0 ? 'text-[#14F195]' : 'text-red-400'
-              }`}>
-                {token.change >= 0 ? (
-                  <TrendingUp className="w-4 h-4" />
-                ) : (
-                  <TrendingDown className="w-4 h-4" />
-                )}
-                <span className="text-sm font-medium">
-                  {token.change >= 0 ? '+' : ''}{token.change}%
-                </span>
               </div>
             </div>
           </motion.div>
         ))}
-      </div>
+        </div>
+      )}
     </Card>
   );
 }
