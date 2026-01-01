@@ -4,11 +4,11 @@ import { TrendingUp, TrendingDown } from "lucide-react";
 import { motion } from 'framer-motion';
 
 const tokens = [
-  { symbol: 'SOL', name: 'Solana', logo: '◎', balance: 12.58, price: 172.50, change: 5.42, color: '#14F195' },
-  { symbol: 'USDC', name: 'USD Coin', logo: '$', balance: 450.00, price: 1.00, change: 0.01, color: '#2775CA' },
-  { symbol: 'BONK', name: 'Bonk', logo: '🐕', balance: 15000000, price: 0.000028, change: 12.5, color: '#F7931A' },
-  { symbol: 'JUP', name: 'Jupiter', logo: '🪐', balance: 200, price: 1.25, change: -2.3, color: '#9945FF' },
-  { symbol: 'RAY', name: 'Raydium', logo: '💧', balance: 50, price: 2.80, change: 8.1, color: '#6E42EE' },
+  { symbol: 'SOL', name: 'Solana', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', balance: 12.58, price: 172.50, change: 5.42, color: '#14F195' },
+  { symbol: 'USDC', name: 'USD Coin', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', balance: 450.00, price: 1.00, change: 0.01, color: '#2775CA' },
+  { symbol: 'BONK', name: 'Bonk', logo: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I', balance: 15000000, price: 0.000028, change: 12.5, color: '#F7931A' },
+  { symbol: 'JUP', name: 'Jupiter', logo: 'https://static.jup.ag/jup/icon.png', balance: 200, price: 1.25, change: -2.3, color: '#9945FF' },
+  { symbol: 'RAY', name: 'Raydium', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', balance: 50, price: 2.80, change: 8.1, color: '#6E42EE' },
 ];
 
 export default function TokenList() {
@@ -29,10 +29,10 @@ export default function TokenList() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div 
-                  className="w-10 h-10 rounded-full flex items-center justify-center text-lg"
+                  className="w-10 h-10 rounded-full flex items-center justify-center p-1"
                   style={{ backgroundColor: `${token.color}20` }}
                 >
-                  {token.logo}
+                  <img src={token.logo} alt={token.symbol} className="w-full h-full object-contain" />
                 </div>
                 <div>
                   <p className="text-white font-medium group-hover:text-[#14F195] transition-colors">

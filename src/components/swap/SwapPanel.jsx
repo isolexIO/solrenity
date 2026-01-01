@@ -13,11 +13,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useWallet } from '../wallet/WalletContext';
 
 const tokens = [
-  { symbol: 'SOL', name: 'Solana', logo: '◎', price: 172.50, balance: 12.58 },
-  { symbol: 'USDC', name: 'USD Coin', logo: '$', price: 1.00, balance: 450.00 },
-  { symbol: 'BONK', name: 'Bonk', logo: '🐕', price: 0.000028, balance: 15000000 },
-  { symbol: 'JUP', name: 'Jupiter', logo: '🪐', price: 1.25, balance: 200 },
-  { symbol: 'RAY', name: 'Raydium', logo: '💧', price: 2.80, balance: 50 },
+  { symbol: 'SOL', name: 'Solana', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', price: 172.50, balance: 12.58 },
+  { symbol: 'USDC', name: 'USD Coin', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', price: 1.00, balance: 450.00 },
+  { symbol: 'BONK', name: 'Bonk', logo: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I', price: 0.000028, balance: 15000000 },
+  { symbol: 'JUP', name: 'Jupiter', logo: 'https://static.jup.ag/jup/icon.png', price: 1.25, balance: 200 },
+  { symbol: 'RAY', name: 'Raydium', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', price: 2.80, balance: 50 },
 ];
 
 export default function SwapPanel({ compact = false }) {
@@ -71,7 +71,7 @@ export default function SwapPanel({ compact = false }) {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-white flex items-center gap-2">
-          <span className="text-2xl">🪐</span> Jupiter Swap
+          <img src="https://static.jup.ag/jup/icon.png" alt="Jupiter" className="w-7 h-7" /> Jupiter Swap
         </h3>
         <Button
           variant="ghost"

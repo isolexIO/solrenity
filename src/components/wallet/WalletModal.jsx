@@ -26,11 +26,16 @@ const wallets = [
 ];
 
 export default function WalletModal({ open, onClose }) {
-  const { connect } = useWallet();
+  const { wallet } = useWallet();
 
   const handleConnect = async (walletId) => {
-    await connect(walletId);
-    onClose();
+    try {
+      await wallet.select(walletId);
+      await wallet.connect();
+      onClose();
+    } catch (error) {
+      console.error('Error connecting:', error);
+    }
   };
 
   return (
