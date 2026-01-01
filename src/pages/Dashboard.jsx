@@ -11,7 +11,7 @@ import NetworkStats from '../components/dashboard/NetworkStats';
 import StakingPanel from '../components/dashboard/StakingPanel';
 import { useWallet } from '../components/wallet/WalletContext';
 import WalletButton from '../components/wallet/WalletButton';
-import { Zap, Shield, Globe, Wallet, Coins } from "lucide-react";
+import { Zap, Shield, Globe, Wallet, Coins, Clock } from "lucide-react";
 
 export default function Dashboard() {
   const { connected } = useWallet();
@@ -29,9 +29,13 @@ export default function Dashboard() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", duration: 0.8 }}
-            className="w-32 h-32 mx-auto mb-8 rounded-3xl bg-gradient-to-br from-[#9945FF] to-[#14F195] flex items-center justify-center shadow-2xl shadow-purple-500/20"
+            className="w-32 h-32 mx-auto mb-8"
           >
-            <span className="text-6xl font-bold text-white">S</span>
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/227d77bce_SOLrenity.png" 
+              alt="SOLrenity" 
+              className="w-full h-full object-contain"
+            />
           </motion.div>
 
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
@@ -84,7 +88,7 @@ export default function Dashboard() {
           <BalanceCard />
 
           <Tabs defaultValue="tokens" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-white/5 border border-white/10">
+            <TabsList className="grid w-full grid-cols-3 bg-white/5 border border-white/10">
               <TabsTrigger value="tokens" className="data-[state=active]:bg-[#9945FF]">
                 <Coins className="w-4 h-4 mr-2" />
                 Tokens
@@ -93,6 +97,10 @@ export default function Dashboard() {
                 <Wallet className="w-4 h-4 mr-2" />
                 Staking
               </TabsTrigger>
+              <TabsTrigger value="activity" className="data-[state=active]:bg-[#9945FF]">
+                <Clock className="w-4 h-4 mr-2" />
+                Activity
+              </TabsTrigger>
             </TabsList>
             <TabsContent value="tokens" className="mt-6">
               <TokenList />
@@ -100,9 +108,10 @@ export default function Dashboard() {
             <TabsContent value="staking" className="mt-6">
               <StakingPanel />
             </TabsContent>
+            <TabsContent value="activity" className="mt-6">
+              <RecentActivity />
+            </TabsContent>
           </Tabs>
-
-          <RecentActivity />
         </div>
 
         {/* Right Column - Quick Swap & DeFi */}

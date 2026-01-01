@@ -90,6 +90,19 @@ export default function Home() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
+            <motion.div
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", duration: 0.8 }}
+              className="w-40 h-40 mx-auto mb-8"
+            >
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/227d77bce_SOLrenity.png" 
+                alt="SOLrenity" 
+                className="w-full h-full object-contain"
+              />
+            </motion.div>
+
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-6">
               <div className="w-2 h-2 rounded-full bg-[#14F195] animate-pulse" />
               <span className="text-white/70 text-sm">Your Gateway to Solana</span>
