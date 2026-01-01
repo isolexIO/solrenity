@@ -143,10 +143,10 @@ export default function Layout({ children, currentPageName }) {
           }
         `}</style>
         
-        <Sidebar currentPage={currentPageName} />
-        <TopBar />
+        {currentPageName !== 'Home' && <Sidebar currentPage={currentPageName} />}
+        {currentPageName !== 'Home' && <TopBar />}
 
-        <main className="ml-0 sm:ml-20 lg:ml-64 pt-16 min-h-screen">
+        <main className={`${currentPageName !== 'Home' ? 'ml-0 sm:ml-20 lg:ml-64 pt-16' : ''} min-h-screen`}>
           <div className="p-4 sm:p-6 lg:p-8">
             {children}
           </div>
