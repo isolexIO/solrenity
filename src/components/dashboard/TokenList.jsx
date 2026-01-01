@@ -44,7 +44,6 @@ export default function TokenList() {
   };
 
   if (!connected || loading) {
-  if (!connected || loading) {
     return null;
   }
 
