@@ -14,27 +14,43 @@ export default function TokenStats() {
   const { data: tokens, isLoading, refetch } = useQuery({
     queryKey: ['jupiter-tokens'],
     queryFn: async () => {
-      // Fetch token list from Jupiter
-      const tokensResponse = await fetch('https://token.jup.ag/all');
-      const allTokens = await tokensResponse.json();
-      
-      // Get top tokens by filtering verified and popular ones
-      const topTokens = allTokens
-        .filter(t => t.daily_volume && t.daily_volume > 10000)
-        .sort((a, b) => (b.daily_volume || 0) - (a.daily_volume || 0))
-        .slice(0, 100);
-      
-      // Get prices for these tokens
-      const mintAddresses = topTokens.map(t => t.address).join(',');
-      const priceResponse = await fetch(`https://price.jup.ag/v6/price?ids=${mintAddresses}`);
+      // Popular Solana token addresses
+      const popularTokens = [
+        { address: 'So11111111111111111111111111111111111111112', symbol: 'SOL', name: 'Solana' },
+        { address: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', symbol: 'USDC', name: 'USD Coin' },
+        { address: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', symbol: 'USDT', name: 'Tether USD' },
+        { address: 'mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So', symbol: 'mSOL', name: 'Marinade staked SOL' },
+        { address: 'J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn', symbol: 'jitoSOL', name: 'Jito Staked SOL' },
+        { address: '7vfCXTUXx5WJV5JADk17DUJ4ksgau7utNKj4b963voxs', symbol: 'ETH', name: 'Ether (Portal)' },
+        { address: '3NZ9JMVBmGAqocybic2c7LQCJScmgsAZ6vQqTDzcqmJh', symbol: 'WBTC', name: 'Wrapped Bitcoin (Portal)' },
+        { address: 'HZ1JovNiVvGrGNiiYvEozEVgZ58xaU3RKwX8eACQBCt3', symbol: 'PYTH', name: 'Pyth Network' },
+        { address: 'jtojtomepa8beP8AuQc6eXt5FriJwfFMwQx2v2f9mCL', symbol: 'JTO', name: 'Jito' },
+        { address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', symbol: 'BONK', name: 'Bonk' },
+        { address: 'TNSRxcUxoT9xBG3de7PiJyTDYu7kskLqcpddxnEJAS6', symbol: 'TNSR', name: 'Tensor' },
+        { address: '5oVNBeEEQvYi1cX3ir8Dx5n1P7pdxydbGF2X4TxVusJm', symbol: 'INF', name: 'Infinity' },
+        { address: 'MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5', symbol: 'MEW', name: 'Mew' },
+        { address: 'WENWENvqqNya429ubCdR81ZmD69brwQaaBYY6p3LCpk', symbol: 'WEN', name: 'Wen' },
+        { address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN', symbol: 'JUP', name: 'Jupiter' },
+      ];
+
+      // Get prices from Jupiter
+      const mintAddresses = popularTokens.map(t => t.address).join(',');
+      const priceResponse = await fetch(`https://api.jup.ag/price/v2?ids=${mintAddresses}&showExtraInfo=true`);
       const priceData = await priceResponse.json();
       
-      // Merge price data with token data
-      return topTokens.map(token => ({
-        ...token,
-        price: priceData.data[token.address]?.price || 0,
-        priceChange24h: priceData.data[token.address]?.priceChange24h || 0,
-      }));
+      // Merge token info with price data
+      return popularTokens.map(token => {
+        const priceInfo = priceData.data?.[token.address];
+        return {
+          address: token.address,
+          symbol: token.symbol,
+          name: token.name,
+          logoURI: `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${token.address}/logo.png`,
+          price: priceInfo?.price || 0,
+          priceChange24h: priceInfo?.extraInfo?.quotedPrice?.change24hPercent || 0,
+          daily_volume: priceInfo?.extraInfo?.quotedPrice?.buyAmount24h || 0,
+        };
+      }).filter(t => t.price > 0);
     },
     staleTime: 30000, // Refresh every 30 seconds
   });
