@@ -100,7 +100,26 @@ export default function TokenList() {
                   className="w-10 h-10 rounded-full flex items-center justify-center p-1"
                   style={{ backgroundColor: `${token.color}20` }}
                 >
-                  <img src={token.logo} alt={token.symbol} className="w-full h-full object-contain" />
+                  {token.logo ? (
+                    <img 
+                      src={token.logo} 
+                      alt={token.symbol} 
+                      className="w-full h-full object-contain rounded-full"
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className="w-full h-full rounded-full flex items-center justify-center text-white font-bold text-xs"
+                    style={{ 
+                      backgroundColor: token.color,
+                      display: token.logo ? 'none' : 'flex'
+                    }}
+                  >
+                    {token.symbol.slice(0, 2)}
+                  </div>
                 </div>
                 <div>
                   <p className="text-white font-medium group-hover:text-[#14F195] transition-colors">
