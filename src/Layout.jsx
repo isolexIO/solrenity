@@ -30,11 +30,16 @@ export default function Layout({ children, currentPageName }) {
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                   <div className="relative w-32 h-32">
                     {/* Sun glow */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#9945FF] via-[#14F195] to-[#9945FF] rounded-full blur-2xl opacity-60 animate-pulse" style={{ animationDuration: '3s' }} />
-                    <div className="absolute inset-0 bg-gradient-to-br from-[#9945FF] to-[#14F195] rounded-full opacity-80" />
-                    {/* Solana logo representation */}
-                    <div className="absolute inset-0 flex items-center justify-center text-white text-5xl font-bold">
-                      S
+                    <div className="absolute inset-0 bg-gradient-to-br from-[#9945FF] via-[#14F195] to-[#9945FF] rounded-full blur-3xl opacity-60 animate-pulse" style={{ animationDuration: '3s' }} />
+                    <div className="absolute inset-2 bg-gradient-to-br from-[#9945FF] via-[#14F195] to-[#9945FF] rounded-full blur-xl opacity-80 animate-pulse" style={{ animationDuration: '2s' }} />
+                    {/* Solana Logo */}
+                    <div className="absolute inset-0 flex items-center justify-center p-6">
+                      <img 
+                        src="https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png" 
+                        alt="Solana"
+                        className="w-full h-full object-contain drop-shadow-2xl animate-pulse"
+                        style={{ animationDuration: '4s' }}
+                      />
                     </div>
                   </div>
                 </div>
