@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,52 +8,131 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ArrowDownUp, Settings, Info, Loader2 } from "lucide-react";
+import { ArrowDownUp, Settings, Info, Loader2, TrendingUp, Zap } from "lucide-react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useWallet } from '../wallet/WalletContext';
+import { base44 } from '@/api/base44Client';
+import { Transaction, VersionedTransaction } from '@solana/web3.js';
+import bs58 from 'bs58';
 
 const tokens = [
-  { symbol: 'SOL', name: 'Solana', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', price: 172.50, balance: 12.58 },
-  { symbol: 'USDC', name: 'USD Coin', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', price: 1.00, balance: 450.00 },
-  { symbol: 'BONK', name: 'Bonk', logo: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I', price: 0.000028, balance: 15000000 },
-  { symbol: 'JUP', name: 'Jupiter', logo: 'https://static.jup.ag/jup/icon.png', price: 1.25, balance: 200 },
-  { symbol: 'RAY', name: 'Raydium', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', price: 2.80, balance: 50 },
+  { symbol: 'SOL', name: 'Solana', mint: 'So11111111111111111111111111111111111111112', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png', decimals: 9 },
+  { symbol: 'USDC', name: 'USD Coin', mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png', decimals: 6 },
+  { symbol: 'BONK', name: 'Bonk', mint: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263', logo: 'https://arweave.net/hQiPZOsRZXGXBJd_82PhVdlM_hACsT_q6wqwf5cSY7I', decimals: 5 },
+  { symbol: 'JUP', name: 'Jupiter', mint: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN', logo: 'https://static.jup.ag/jup/icon.png', decimals: 6 },
+  { symbol: 'RAY', name: 'Raydium', mint: '4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R/logo.png', decimals: 6 },
+  { symbol: 'USDT', name: 'Tether USD', mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB', logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.svg', decimals: 6 },
 ];
 
 export default function SwapPanel({ compact = false }) {
-  const { connected } = useWallet();
+  const { connected, publicKeyFull, wallet } = useWallet();
   const [fromToken, setFromToken] = useState('SOL');
   const [toToken, setToToken] = useState('USDC');
   const [fromAmount, setFromAmount] = useState('');
   const [slippage, setSlippage] = useState(0.5);
   const [showSettings, setShowSettings] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [quoteData, setQuoteData] = useState(null);
+  const [quoteLoading, setQuoteLoading] = useState(false);
+  const [routeInfo, setRouteInfo] = useState(null);
 
   const fromTokenData = tokens.find(t => t.symbol === fromToken);
   const toTokenData = tokens.find(t => t.symbol === toToken);
   
-  const toAmount = fromAmount && fromTokenData && toTokenData
-    ? ((parseFloat(fromAmount) * fromTokenData.price) / toTokenData.price).toFixed(6)
+  const toAmount = quoteData?.outputAmount 
+    ? (parseInt(quoteData.outputAmount) / Math.pow(10, toTokenData?.decimals || 6)).toFixed(6)
     : '';
+
+  // Get quote when amount or tokens change
+  useEffect(() => {
+    const getQuote = async () => {
+      if (!fromAmount || !fromTokenData || !toTokenData || parseFloat(fromAmount) <= 0) {
+        setQuoteData(null);
+        setRouteInfo(null);
+        return;
+      }
+
+      setQuoteLoading(true);
+      try {
+        const amountInSmallestUnit = Math.floor(parseFloat(fromAmount) * Math.pow(10, fromTokenData.decimals));
+        
+        const response = await base44.functions.invoke('jupiterQuote', {
+          inputMint: fromTokenData.mint,
+          outputMint: toTokenData.mint,
+          amount: amountInSmallestUnit.toString(),
+          slippageBps: Math.floor(slippage * 100)
+        });
+
+        if (response.data.quote) {
+          setQuoteData(response.data.quote);
+          
+          // Extract route information
+          const routes = response.data.quote.routePlan || [];
+          const dexes = routes.map(r => r.swapInfo?.label || 'Unknown').filter((v, i, a) => a.indexOf(v) === i);
+          setRouteInfo({
+            dexCount: dexes.length,
+            dexes: dexes.slice(0, 3),
+            priceImpact: response.data.quote.priceImpactPct
+          });
+        }
+      } catch (error) {
+        console.error('Quote error:', error);
+        setQuoteData(null);
+        setRouteInfo(null);
+      } finally {
+        setQuoteLoading(false);
+      }
+    };
+
+    const debounce = setTimeout(getQuote, 500);
+    return () => clearTimeout(debounce);
+  }, [fromAmount, fromToken, toToken, slippage]);
 
   const switchTokens = () => {
     setFromToken(toToken);
     setToToken(fromToken);
     setFromAmount('');
+    setQuoteData(null);
+    setRouteInfo(null);
   };
 
   const handleSwap = async () => {
-    if (!connected || !fromAmount) return;
+    if (!connected || !fromAmount || !quoteData || !publicKeyFull) return;
     
     setLoading(true);
     try {
-      // This is a placeholder - real swap would need:
-      // 1. Get Jupiter quote
-      // 2. Get swap transaction
-      // 3. Sign with wallet
-      // 4. Send transaction
-      alert('Swap functionality requires wallet signing. This is a demo showing the UI flow.');
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Get swap transaction from Jupiter
+      const swapResponse = await base44.functions.invoke('jupiterSwap', {
+        quoteResponse: quoteData,
+        userPublicKey: publicKeyFull
+      });
+
+      if (!swapResponse.data.swapTransaction) {
+        throw new Error('Failed to get swap transaction');
+      }
+
+      // Deserialize and sign the transaction
+      const swapTransactionBuf = Buffer.from(swapResponse.data.swapTransaction, 'base64');
+      const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
+      
+      // Sign the transaction with wallet
+      const signedTransaction = await wallet.signTransaction(transaction);
+      
+      // Send the signed transaction
+      const { connection } = wallet.wallet;
+      const rawTransaction = signedTransaction.serialize();
+      const txid = await connection.sendRawTransaction(rawTransaction, {
+        skipPreflight: true,
+        maxRetries: 2
+      });
+
+      // Wait for confirmation
+      await connection.confirmTransaction(txid, 'confirmed');
+      
+      alert(`Swap successful! Transaction: ${txid}`);
+      setFromAmount('');
+      setQuoteData(null);
+      
     } catch (error) {
       console.error('Swap error:', error);
       alert('Swap failed: ' + error.message);
@@ -119,9 +198,11 @@ export default function SwapPanel({ compact = false }) {
       <div className="bg-white/5 rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-white/50">You pay</span>
-          <span className="text-sm text-white/50">
-            Balance: {fromTokenData?.balance.toLocaleString()} {fromToken}
-          </span>
+          {quoteLoading && (
+            <span className="text-xs text-[#14F195] flex items-center gap-1">
+              <Loader2 className="w-3 h-3 animate-spin" /> Finding best rate...
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <Select value={fromToken} onValueChange={setFromToken}>
@@ -147,19 +228,7 @@ export default function SwapPanel({ compact = false }) {
             className="flex-1 bg-transparent border-0 text-white text-2xl font-bold text-right focus-visible:ring-0 placeholder:text-white/20"
           />
         </div>
-        <div className="flex gap-2">
-          {[25, 50, 75, 100].map((percent) => (
-            <Button
-              key={percent}
-              variant="ghost"
-              size="sm"
-              onClick={() => setFromAmount((fromTokenData?.balance * percent / 100).toString())}
-              className="text-xs text-white/40 hover:text-white hover:bg-white/10 rounded-lg"
-            >
-              {percent}%
-            </Button>
-          ))}
-        </div>
+
       </div>
 
       {/* Switch Button */}
@@ -178,9 +247,11 @@ export default function SwapPanel({ compact = false }) {
       <div className="bg-white/5 rounded-xl p-4 space-y-3">
         <div className="flex items-center justify-between">
           <span className="text-sm text-white/50">You receive</span>
-          <span className="text-sm text-white/50">
-            Balance: {toTokenData?.balance.toLocaleString()} {toToken}
-          </span>
+          {routeInfo && (
+            <span className="text-xs text-[#14F195] flex items-center gap-1">
+              <Zap className="w-3 h-3" /> {routeInfo.dexCount} DEX{routeInfo.dexCount > 1 ? 'es' : ''}
+            </span>
+          )}
         </div>
         <div className="flex items-center gap-3">
           <Select value={toToken} onValueChange={setToToken}>
@@ -209,27 +280,49 @@ export default function SwapPanel({ compact = false }) {
       </div>
 
       {/* Rate Info */}
-      {fromAmount && toAmount && (
+      {fromAmount && toAmount && quoteData && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="mt-4 p-3 bg-white/5 rounded-xl"
+          className="mt-4 space-y-3"
         >
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-white/50 flex items-center gap-1">
-              <Info className="w-4 h-4" /> Rate
-            </span>
-            <span className="text-white">
-              1 {fromToken} = {(fromTokenData?.price / toTokenData?.price).toFixed(4)} {toToken}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-sm mt-2">
-            <span className="text-white/50">Network fee</span>
-            <span className="text-white">~0.000005 SOL</span>
-          </div>
-          <div className="flex items-center justify-between text-sm mt-2">
-            <span className="text-white/50">Slippage</span>
-            <span className="text-[#14F195]">{slippage}%</span>
+          {/* Route Information */}
+          {routeInfo && routeInfo.dexes.length > 0 && (
+            <div className="p-3 bg-[#14F195]/10 border border-[#14F195]/20 rounded-xl">
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-4 h-4 text-[#14F195]" />
+                <span className="text-xs font-semibold text-[#14F195]">Best Route Found</span>
+              </div>
+              <div className="flex flex-wrap gap-1">
+                {routeInfo.dexes.map((dex, i) => (
+                  <span key={i} className="text-xs bg-white/10 text-white px-2 py-1 rounded">
+                    {dex}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Price Details */}
+          <div className="p-3 bg-white/5 rounded-xl space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-white/50">Rate</span>
+              <span className="text-white">
+                1 {fromToken} ≈ {(parseFloat(toAmount) / parseFloat(fromAmount)).toFixed(4)} {toToken}
+              </span>
+            </div>
+            {routeInfo?.priceImpact && (
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-white/50">Price Impact</span>
+                <span className={parseFloat(routeInfo.priceImpact) > 1 ? 'text-orange-400' : 'text-[#14F195]'}>
+                  {parseFloat(routeInfo.priceImpact).toFixed(2)}%
+                </span>
+              </div>
+            )}
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-white/50">Slippage Tolerance</span>
+              <span className="text-white">{slippage}%</span>
+            </div>
           </div>
         </motion.div>
       )}
@@ -237,7 +330,7 @@ export default function SwapPanel({ compact = false }) {
       {/* Swap Button */}
       <Button
         onClick={handleSwap}
-        disabled={!connected || !fromAmount || loading}
+        disabled={!connected || !fromAmount || loading || !quoteData || quoteLoading}
         className="w-full mt-4 h-14 rounded-xl bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white font-bold text-lg disabled:opacity-50 transition-all duration-300"
       >
         {loading ? (
@@ -246,6 +339,8 @@ export default function SwapPanel({ compact = false }) {
           'Connect Wallet'
         ) : !fromAmount ? (
           'Enter Amount'
+        ) : quoteLoading ? (
+          'Getting Quote...'
         ) : (
           'Swap'
         )}
