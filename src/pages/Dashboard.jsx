@@ -4,6 +4,7 @@ import BalanceCard from '../components/dashboard/BalanceCard';
 import TokenList from '../components/dashboard/TokenList';
 import RecentActivity from '../components/dashboard/RecentActivity';
 import SwapPanel from '../components/swap/SwapPanel';
+import AirdropChecker from '../components/dashboard/AirdropChecker';
 import { useWallet } from '../components/wallet/WalletContext';
 import WalletButton from '../components/wallet/WalletButton';
 import { Zap, Shield, Globe } from "lucide-react";
@@ -84,6 +85,8 @@ export default function Dashboard() {
         {/* Right Column - Quick Swap */}
         <div className="space-y-6">
           <SwapPanel compact />
+          
+          <AirdropChecker />
           
           {/* Quick Stats */}
           <motion.div
