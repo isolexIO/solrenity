@@ -59,6 +59,13 @@ export default function SwapPanel({ compact = false }) {
       try {
         const amountInSmallestUnit = Math.floor(parseFloat(fromAmount) * Math.pow(10, fromTokenData.decimals));
         
+        console.log('Fetching quote:', {
+          inputMint: fromTokenData.mint,
+          outputMint: toTokenData.mint,
+          amount: amountInSmallestUnit.toString(),
+          slippageBps: Math.floor(slippage * 100)
+        });
+        
         const response = await base44.functions.invoke('jupiterQuote', {
           inputMint: fromTokenData.mint,
           outputMint: toTokenData.mint,
@@ -66,7 +73,9 @@ export default function SwapPanel({ compact = false }) {
           slippageBps: Math.floor(slippage * 100)
         });
 
-        if (response.data.quote) {
+        console.log('Quote response:', response.data);
+
+        if (response.data && response.data.quote) {
           setQuoteData(response.data.quote);
           
           // Extract route information
@@ -77,6 +86,10 @@ export default function SwapPanel({ compact = false }) {
             dexes: dexes.slice(0, 3),
             priceImpact: response.data.quote.priceImpactPct
           });
+        } else {
+          console.error('No quote in response:', response.data);
+          setQuoteData(null);
+          setRouteInfo(null);
         }
       } catch (error) {
         console.error('Quote error:', error);
@@ -89,7 +102,7 @@ export default function SwapPanel({ compact = false }) {
 
     const debounce = setTimeout(getQuote, 500);
     return () => clearTimeout(debounce);
-  }, [fromAmount, fromToken, toToken, slippage]);
+  }, [fromAmount, fromToken, toToken, slippage, fromTokenData, toTokenData]);
 
   const switchTokens = () => {
     setFromToken(toToken);
