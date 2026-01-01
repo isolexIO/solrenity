@@ -14,30 +14,23 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://avatars.githubusercontent.com/u/78782331?s=200&v=4',
+    icon: 'https://cryptologos.cc/logos/phantom-phantom-logo.png',
     color: 'from-purple-600 to-purple-900',
     installed: isMobile || (typeof window !== 'undefined' && window.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://solflare.com/assets/logo.svg',
+    icon: 'https://cryptologos.cc/logos/solflare-sfr-logo.png',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
   {
-    id: 'backpack',
-    name: 'Backpack',
-    icon: 'https://backpack.app/icon512_rounded.png',
-    color: 'from-red-600 to-red-800',
-    installed: isMobile || (typeof window !== 'undefined' && window.backpack)
-  },
-  {
-    id: 'jupiter',
-    name: 'Jupiter',
-    icon: 'https://static.jup.ag/jup/icon.png',
-    color: 'from-green-500 to-green-700',
-    installed: isMobile || (typeof window !== 'undefined' && window.jupiter)
+    id: 'torus',
+    name: 'Torus',
+    icon: 'https://app.tor.us/v1.27.1/img/torus-logo-blue.d78c73ae.svg',
+    color: 'from-blue-500 to-blue-700',
+    installed: true
   }
 ];
 
@@ -49,8 +42,7 @@ export default function WalletModal({ open, onClose }) {
       const walletNames = {
         'phantom': 'Phantom',
         'solflare': 'Solflare',
-        'backpack': 'Backpack',
-        'jupiter': 'Jupiter Wallet'
+        'torus': 'Torus'
       };
       const walletName = walletNames[walletId] || 'Phantom';
       
@@ -62,32 +54,15 @@ export default function WalletModal({ open, onClose }) {
         wallet.select(selectedWallet.adapter.name);
         
         // Wait a bit for selection to complete
-        await new Promise(resolve => setTimeout(resolve, 100));
+        await new Promise(resolve => setTimeout(resolve, 200));
         
         // Try to connect
         await wallet.connect();
         
         onClose();
-      } else {
-        throw new Error(`${walletName} not found`);
       }
     } catch (error) {
       console.error('Error connecting wallet:', error);
-      
-      // On mobile, if wallet not installed, redirect to install or open app
-      if (isMobile) {
-        const deepLinks = {
-          'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
-          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
-          'backpack': 'https://backpack.app/download',
-          'jupiter': 'https://wallet.jup.ag'
-        };
-        
-        const link = deepLinks[walletId];
-        if (link) {
-          window.open(link, '_blank');
-        }
-      }
     }
   };
 
