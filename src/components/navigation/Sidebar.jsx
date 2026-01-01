@@ -32,18 +32,13 @@ export default function Sidebar({ currentPage }) {
       className="hidden sm:flex fixed left-0 top-0 h-full w-20 lg:w-64 bg-[#0D0D14] border-r border-white/5 z-40 flex-col"
     >
       {/* Logo */}
-      <div className="p-4 lg:p-6 flex items-center gap-3">
-        <div className="w-10 h-10 flex items-center justify-center">
-          <img 
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/47c94b383_SOLrenity2.png" 
-            alt="SOLrenity" 
-            className="w-full h-full object-contain"
-          />
-        </div>
-        <div className="hidden lg:block">
-          <h1 className="text-white font-bold text-lg">SOLrenity</h1>
-          <p className="text-white/40 text-xs">Solana Browser</p>
-        </div>
+      <div className="p-4 lg:p-6 flex items-center justify-center lg:justify-start gap-3">
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/4776bd142_SOLrenity.png" 
+          alt="SOLrenity" 
+          className="object-contain"
+          style={{ width: '120px', height: '120px' }}
+        />
       </div>
 
       {/* Navigation */}
