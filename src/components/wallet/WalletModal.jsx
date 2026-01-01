@@ -51,15 +51,51 @@ export default function WalletModal({ open, onClose }) {
   const generateJupiterQR = async () => {
     try {
       const connectUrl = `https://jup.ag/connect?dapp=${encodeURIComponent(window.location.origin)}&return=${encodeURIComponent(window.location.href)}`;
+      
+      // Generate QR code with high error correction to allow logo overlay
       const qrUrl = await QRCode.toDataURL(connectUrl, {
         width: 300,
         margin: 2,
+        errorCorrectionLevel: 'H',
         color: {
           dark: '#000000',
           light: '#FFFFFF'
         }
       });
-      setQrDataUrl(qrUrl);
+      
+      // Create canvas to add Jupiter logo in center
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = 300;
+      canvas.height = 300;
+      
+      // Draw QR code
+      const qrImage = new Image();
+      qrImage.onload = () => {
+        ctx.drawImage(qrImage, 0, 0, 300, 300);
+        
+        // Add white circle background for logo
+        const centerX = 150;
+        const centerY = 150;
+        const radius = 35;
+        
+        ctx.fillStyle = '#FFFFFF';
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        // Draw Jupiter logo
+        const logo = new Image();
+        logo.crossOrigin = 'anonymous';
+        logo.onload = () => {
+          const logoSize = 60;
+          ctx.drawImage(logo, centerX - logoSize/2, centerY - logoSize/2, logoSize, logoSize);
+          setQrDataUrl(canvas.toDataURL());
+        };
+        logo.src = 'https://static.jup.ag/jup/icon.png';
+      };
+      qrImage.src = qrUrl;
+      
     } catch (error) {
       console.error('Error generating QR code:', error);
     }
