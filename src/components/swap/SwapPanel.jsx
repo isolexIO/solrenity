@@ -119,7 +119,7 @@ export default function SwapPanel({ compact = false }) {
       const signedTransaction = await wallet.signTransaction(transaction);
       
       // Send the signed transaction
-      const { connection } = wallet.wallet;
+      const { connection } = useWallet().wallet.wallet;
       const rawTransaction = signedTransaction.serialize();
       const txid = await connection.sendRawTransaction(rawTransaction, {
         skipPreflight: true,
