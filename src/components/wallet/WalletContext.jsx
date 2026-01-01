@@ -120,7 +120,7 @@ export const WalletProvider = ({ children }) => {
       case 'testnet':
         return 'https://api.testnet.solana.com';
       default:
-        return 'https://api.mainnet-beta.solana.com';
+        return 'https://mainnet.helius-rpc.com/?api-key=bbee7042-85f5-4b2c-85bf-972f09aad483';
     }
   }, [network]);
 
