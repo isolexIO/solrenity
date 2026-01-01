@@ -13,30 +13,73 @@ Deno.serve(async (req) => {
         const { domain } = await req.json();
 
         if (!domain) {
-            return Response.json({ error: 'Domain is required' }, { status: 400 });
+            return Response.json({ error: 'Domain required' }, { status: 400 });
         }
 
         // Remove .sol if present
         const cleanDomain = domain.replace('.sol', '');
 
-        try {
-            // Use SNS SDK to resolve domain
-            const response = await fetch(`https://sns-sdk-proxy.bonfida.workers.dev/resolve/${cleanDomain}`);
-            const data = await response.json();
+        // Connect to Solana mainnet
+        const connection = new Connection('https://api.mainnet-beta.solana.com');
 
-            if (data.result) {
-                return Response.json({ 
-                    address: data.result,
-                    domain: `${cleanDomain}.sol`
-                });
-            } else {
-                return Response.json({ error: 'Domain not found' }, { status: 404 });
-            }
-        } catch (error) {
-            return Response.json({ error: 'Failed to resolve SNS domain' }, { status: 500 });
+        // SNS uses a specific program ID
+        const NAME_PROGRAM_ID = new PublicKey('namesLPneVptA9Z5rqUDD9tMTWEJwofgaYwp8cawRkX');
+
+        // Hash the domain to get the account
+        const hashedName = await hashName(cleanDomain);
+        const nameAccountKey = await getNameAccountKey(
+            hashedName,
+            undefined,
+            NAME_PROGRAM_ID
+        );
+
+        // Fetch the account data
+        const accountInfo = await connection.getAccountInfo(nameAccountKey);
+
+        if (!accountInfo) {
+            return Response.json({ 
+                error: 'Domain not found',
+                resolved: false 
+            }, { status: 404 });
         }
+
+        // Parse the owner from account data
+        // SNS stores the owner at offset 32
+        const ownerPubkey = new PublicKey(accountInfo.data.slice(32, 64));
+
+        return Response.json({
+            domain: domain,
+            address: ownerPubkey.toBase58(),
+            resolved: true
+        });
     } catch (error) {
-        console.error('Error:', error);
-        return Response.json({ error: error.message }, { status: 500 });
+        console.error('Error resolving SNS:', error);
+        return Response.json({ 
+            error: error.message,
+            resolved: false 
+        }, { status: 500 });
     }
 });
+
+// Helper functions for SNS
+async function hashName(name) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(name);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    return new Uint8Array(hashBuffer);
+}
+
+async function getNameAccountKey(hashed_name, nameClass, nameProgram) {
+    const seeds = [hashed_name];
+    if (nameClass) {
+        seeds.push(nameClass.toBuffer());
+    }
+    seeds.push(nameProgram.toBuffer());
+    
+    const [nameAccountKey] = await PublicKey.findProgramAddress(
+        seeds,
+        nameProgram
+    );
+    
+    return nameAccountKey;
+}
