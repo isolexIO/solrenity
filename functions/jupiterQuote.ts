@@ -18,15 +18,21 @@ Deno.serve(async (req) => {
     }
 
     // Get quote from Jupiter API v6
-    const quoteResponse = await fetch(
-      `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`
-    );
+    const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`;
+    console.log('Fetching Jupiter quote:', quoteUrl);
+    
+    const quoteResponse = await fetch(quoteUrl);
 
+    console.log('Jupiter API status:', quoteResponse.status);
+    
     if (!quoteResponse.ok) {
-      throw new Error('Failed to get quote from Jupiter');
+      const errorText = await quoteResponse.text();
+      console.error('Jupiter API error:', errorText);
+      throw new Error(`Jupiter API error: ${quoteResponse.status} - ${errorText}`);
     }
 
     const quote = await quoteResponse.json();
+    console.log('Quote received:', { outAmount: quote.outAmount, routePlan: quote.routePlan?.length });
 
     return Response.json({
       quote,
@@ -37,6 +43,7 @@ Deno.serve(async (req) => {
     });
 
   } catch (error) {
+    console.error('jupiterQuote error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
