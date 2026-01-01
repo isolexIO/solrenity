@@ -28,7 +28,8 @@ Deno.serve(async (req) => {
         userPublicKey,
         wrapAndUnwrapSol: true,
         dynamicComputeUnitLimit: true,
-        prioritizationFeeLamports: 'auto'
+        prioritizationFeeLamports: 'auto',
+        feeAccount: '5pf6bw304tlc'
       })
     });
 
