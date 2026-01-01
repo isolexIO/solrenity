@@ -16,8 +16,8 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'Wallet address required' }, { status: 400 });
         }
 
-        // Connect to Solana mainnet
-        const connection = new Connection('https://api.mainnet-beta.solana.com', 'confirmed');
+        // Connect to Solana mainnet with Helius RPC
+        const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=bbee7042-85f5-4b2c-85bf-972f09aad483', 'confirmed');
         const walletPublicKey = new PublicKey(walletAddress);
 
         // Get token accounts owned by the wallet
@@ -38,11 +38,16 @@ Deno.serve(async (req) => {
                     // Fetch metadata from token mint
                     const mintAddress = parsedInfo.mint;
                     
-                    // Try to get metadata from Metaplex
-                    const metadataResponse = await fetch(`https://api.helius.xyz/v0/token-metadata?api-key=public`, {
+                    // Try to get metadata from Helius DAS API
+                    const metadataResponse = await fetch(`https://mainnet.helius-rpc.com/?api-key=bbee7042-85f5-4b2c-85bf-972f09aad483`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ mintAccounts: [mintAddress] })
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 'nft-fetch',
+                            method: 'getAsset',
+                            params: { id: mintAddress }
+                        })
                     }).catch(() => null);
 
                     let nftData = {
@@ -56,14 +61,14 @@ Deno.serve(async (req) => {
                     };
 
                     if (metadataResponse?.ok) {
-                        const metadata = await metadataResponse.json();
-                        if (metadata.length > 0) {
-                            const meta = metadata[0];
+                        const data = await metadataResponse.json();
+                        const asset = data.result;
+                        if (asset) {
                             nftData = {
                                 id: mintAddress,
-                                name: meta.onChainMetadata?.metadata?.data?.name || nftData.name,
-                                collection: meta.onChainMetadata?.metadata?.data?.symbol || 'Unknown',
-                                image: meta.offChainMetadata?.metadata?.image || meta.legacyMetadata?.logoURI || nftData.image,
+                                name: asset.content?.metadata?.name || nftData.name,
+                                collection: asset.grouping?.find(g => g.group_key === 'collection')?.group_value || 'Unknown',
+                                image: asset.content?.links?.image || asset.content?.files?.[0]?.uri || nftData.image,
                                 mint: mintAddress,
                                 price: 'N/A',
                                 rarity: 'Common'

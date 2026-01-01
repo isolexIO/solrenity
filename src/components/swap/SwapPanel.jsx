@@ -118,8 +118,10 @@ export default function SwapPanel({ compact = false }) {
       // Sign the transaction with wallet
       const signedTransaction = await wallet.signTransaction(transaction);
       
-      // Send the signed transaction
-      const { connection } = useWallet().wallet.wallet;
+      // Send the signed transaction using the connection from context
+      const { Connection } = await import('@solana/web3.js');
+      const connection = new Connection('https://mainnet.helius-rpc.com/?api-key=bbee7042-85f5-4b2c-85bf-972f09aad483', 'confirmed');
+      
       const rawTransaction = signedTransaction.serialize();
       const txid = await connection.sendRawTransaction(rawTransaction, {
         skipPreflight: true,
