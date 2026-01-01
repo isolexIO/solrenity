@@ -6,11 +6,14 @@ import WalletButton from '../wallet/WalletButton';
 import NetworkSelector from '../wallet/NetworkSelector';
 import { motion } from 'framer-motion';
 import { base44 } from '@/api/base44Client';
+import { useNavigate } from 'react-router-dom';
+import { createPageUrl } from '../../pages/utils';
 
 export default function TopBar() {
   const [url, setUrl] = useState('');
   const [isSecure, setIsSecure] = useState(true);
   const [resolving, setResolving] = useState(false);
+  const navigate = useNavigate();
 
   const handleNavigate = async (e) => {
     e.preventDefault();
@@ -42,7 +45,8 @@ export default function TopBar() {
       if (!url.startsWith('http')) {
         finalUrl = url.startsWith('www.') ? `https://${url}` : `https://${url}`;
       }
-      window.open(finalUrl, '_blank', 'noopener,noreferrer');
+      // Navigate to Browser page with URL parameter
+      navigate(createPageUrl('Browser') + `?url=${encodeURIComponent(finalUrl)}`);
       return;
     }
     

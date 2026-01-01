@@ -5,6 +5,7 @@ import History from './pages/History';
 import NFTGallery from './pages/NFTGallery';
 import Settings from './pages/Settings';
 import Swap from './pages/Swap';
+import Browser from './pages/Browser';
 import __Layout from './Layout.jsx';
 
 
@@ -16,6 +17,7 @@ export const PAGES = {
     "NFTGallery": NFTGallery,
     "Settings": Settings,
     "Swap": Swap,
+    "Browser": Browser,
 }
 
 export const pagesConfig = {
