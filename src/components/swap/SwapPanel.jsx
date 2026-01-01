@@ -132,7 +132,7 @@ export default function SwapPanel({ compact = false }) {
               {tokens.map((token) => (
                 <SelectItem key={token.symbol} value={token.symbol}>
                   <div className="flex items-center gap-2">
-                    <span>{token.logo}</span>
+                    <img src={token.logo} alt={token.symbol} className="w-5 h-5" />
                     <span>{token.symbol}</span>
                   </div>
                 </SelectItem>
@@ -191,7 +191,7 @@ export default function SwapPanel({ compact = false }) {
               {tokens.map((token) => (
                 <SelectItem key={token.symbol} value={token.symbol}>
                   <div className="flex items-center gap-2">
-                    <span>{token.logo}</span>
+                    <img src={token.logo} alt={token.symbol} className="w-5 h-5" />
                     <span>{token.symbol}</span>
                   </div>
                 </SelectItem>
