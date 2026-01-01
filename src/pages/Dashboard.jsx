@@ -5,6 +5,8 @@ import TokenList from '../components/dashboard/TokenList';
 import RecentActivity from '../components/dashboard/RecentActivity';
 import SwapPanel from '../components/swap/SwapPanel';
 import AirdropChecker from '../components/dashboard/AirdropChecker';
+import DeFiAccess from '../components/dashboard/DeFiAccess';
+import NetworkStats from '../components/dashboard/NetworkStats';
 import { useWallet } from '../components/wallet/WalletContext';
 import WalletButton from '../components/wallet/WalletButton';
 import { Zap, Shield, Globe } from "lucide-react";
@@ -82,42 +84,15 @@ export default function Dashboard() {
           <RecentActivity />
         </div>
 
-        {/* Right Column - Quick Swap */}
+        {/* Right Column - Quick Swap & DeFi */}
         <div className="space-y-6">
           <SwapPanel compact />
-          
+
+          <DeFiAccess />
+
           <AirdropChecker />
-          
-          {/* Quick Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-[#1A1A2E] rounded-2xl border border-white/10 p-5"
-          >
-            <h3 className="text-white font-semibold mb-4">Network Status</h3>
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">TPS</span>
-                <span className="text-[#14F195] font-semibold">3,847</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">Slot</span>
-                <span className="text-white font-mono text-sm">267,438,291</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">Block Time</span>
-                <span className="text-white font-semibold">400ms</span>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-white/50 text-sm">Status</span>
-                <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-[#14F195] animate-pulse" />
-                  <span className="text-[#14F195] text-sm">Healthy</span>
-                </div>
-              </div>
-            </div>
-          </motion.div>
+
+          <NetworkStats />
         </div>
       </div>
     </div>
