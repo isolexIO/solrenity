@@ -19,14 +19,14 @@ const wallets = [
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://avatars.githubusercontent.com/u/83062045?s=200&v=4',
+    icon: 'https://solflare.com/assets/logo.svg',
     color: 'from-orange-500 to-orange-700',
     installed: typeof window !== 'undefined' && window.solflare?.isSolflare
   },
   {
     id: 'backpack',
     name: 'Backpack',
-    icon: 'https://avatars.githubusercontent.com/u/115993675?s=200&v=4',
+    icon: 'https://backpack.app/icon512_rounded.png',
     color: 'from-red-600 to-red-800',
     installed: typeof window !== 'undefined' && window.backpack
   },
