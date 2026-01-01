@@ -14,30 +14,30 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://avatars.githubusercontent.com/u/78782331?s=200&v=4',
+    icon: 'https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/phantom.svg',
     color: 'from-purple-600 to-purple-900',
-    installed: isMobile || (typeof window !== 'undefined' && window.solana?.isPhantom)
+    installed: isMobile || (typeof window !== 'undefined' && window.phantom?.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://solflare.com/assets/logo.svg',
+    icon: 'https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/solflare.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
   {
-    id: 'backpack',
-    name: 'Backpack',
-    icon: 'https://backpack.app/icon512_rounded.png',
-    color: 'from-red-600 to-red-800',
-    installed: isMobile || (typeof window !== 'undefined' && window.backpack)
+    id: 'torus',
+    name: 'Torus',
+    icon: 'https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/torus.svg',
+    color: 'from-blue-500 to-blue-700',
+    installed: true
   },
   {
-    id: 'jupiter',
-    name: 'Jupiter',
-    icon: 'https://static.jup.ag/jup/icon.png',
-    color: 'from-green-500 to-green-700',
-    installed: isMobile || (typeof window !== 'undefined' && window.jupiter)
+    id: 'ledger',
+    name: 'Ledger',
+    icon: 'https://raw.githubusercontent.com/solana-labs/wallet-adapter/master/packages/wallets/icons/ledger.svg',
+    color: 'from-gray-600 to-gray-800',
+    installed: true
   }
 ];
 
@@ -49,13 +49,16 @@ export default function WalletModal({ open, onClose }) {
       const walletNames = {
         'phantom': 'Phantom',
         'solflare': 'Solflare',
-        'backpack': 'Backpack',
-        'jupiter': 'Jupiter Wallet'
+        'torus': 'Torus',
+        'ledger': 'Ledger'
       };
       const walletName = walletNames[walletId] || 'Phantom';
       
       // Find the wallet adapter
-      const selectedWallet = wallet.wallets.find(w => w.adapter.name === walletName);
+      const selectedWallet = wallet.wallets.find(w => 
+        w.adapter.name.toLowerCase().includes(walletId) || 
+        w.adapter.name === walletName
+      );
       
       if (selectedWallet) {
         // Select the wallet
@@ -74,18 +77,16 @@ export default function WalletModal({ open, onClose }) {
     } catch (error) {
       console.error('Error connecting wallet:', error);
       
-      // On mobile, if wallet not installed, redirect to install or open app
-      if (isMobile) {
-        const deepLinks = {
+      // On mobile, if wallet not installed, try to open wallet app
+      if (isMobile && !walletId.includes('torus') && !walletId.includes('ledger')) {
+        const mobileLinks = {
           'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
-          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
-          'backpack': 'https://backpack.app/download',
-          'jupiter': 'https://wallet.jup.ag'
+          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href)
         };
         
-        const link = deepLinks[walletId];
+        const link = mobileLinks[walletId];
         if (link) {
-          window.open(link, '_blank');
+          window.location.href = link;
         }
       }
     }
@@ -125,7 +126,9 @@ export default function WalletModal({ open, onClose }) {
                   {wallet.name}
                 </h3>
                 <p className="text-xs text-white/40">
-                  {wallet.installed ? 'Tap to connect' : 'Not installed'}
+                  {wallet.id === 'torus' ? 'Browser extension or email' : 
+                   wallet.id === 'ledger' ? 'Hardware wallet' : 
+                   wallet.installed ? 'Browser extension' : 'Not detected'}
                 </p>
               </div>
               <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />
