@@ -9,7 +9,8 @@ import {
   History, 
   Settings,
   Shield,
-  ExternalLink
+  ExternalLink,
+  ShieldCheck
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -20,6 +21,7 @@ const navItems = [
   { icon: Image, label: 'NFT Gallery', page: 'NFTGallery' },
   { icon: History, label: 'History', page: 'History' },
   { icon: Settings, label: 'Settings', page: 'Settings' },
+  { icon: ShieldCheck, label: 'Admin', page: 'Admin' },
 ];
 
 export default function Sidebar({ currentPage }) {
