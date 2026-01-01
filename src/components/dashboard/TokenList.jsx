@@ -37,8 +37,7 @@ export default function TokenList() {
           balance: balance,
           price: solPrice,
           valueUsd: balance * solPrice,
-          color: '#14F195',
-          mintAddress: 'So11111111111111111111111111111111111111112'
+          color: '#14F195'
         }
       ];
 
@@ -96,11 +95,11 @@ export default function TokenList() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
-            className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
             onClick={() => {
               setSelectedToken(token);
               setModalOpen(true);
             }}
+            className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -149,11 +148,14 @@ export default function TokenList() {
         ))}
         </div>
       )}
-      
-      <TokenDetailsModal 
-        token={selectedToken} 
-        open={modalOpen} 
-        onClose={() => setModalOpen(false)} 
+
+      <TokenDetailsModal
+        token={selectedToken}
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          setSelectedToken(null);
+        }}
       />
     </Card>
   );
