@@ -10,7 +10,8 @@ import {
   Settings,
   Shield,
   ExternalLink,
-  ShieldCheck
+  ShieldCheck,
+  GraduationCap
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -19,6 +20,7 @@ const navItems = [
   { icon: Compass, label: 'Explore dApps', page: 'Explorer' },
   { icon: ArrowLeftRight, label: 'Swap', page: 'Swap' },
   { icon: Image, label: 'NFT Gallery', page: 'NFTGallery' },
+  { icon: GraduationCap, label: 'Learn', page: 'Learn' },
   { icon: History, label: 'History', page: 'History' },
   { icon: Settings, label: 'Settings', page: 'Settings' },
   { icon: ShieldCheck, label: 'Admin', page: 'Admin' },
