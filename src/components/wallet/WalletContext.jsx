@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useMemo, useState, useEffect } from 'react';
 import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
-import { PhantomWalletAdapter, SolflareWalletAdapter, TorusWalletAdapter, LedgerWalletAdapter } from '@solana/wallet-adapter-wallets';
+import { 
+  PhantomWalletAdapter, 
+  SolflareWalletAdapter, 
+  TorusWalletAdapter, 
+  LedgerWalletAdapter,
+  BackpackWalletAdapter
+} from '@solana/wallet-adapter-wallets';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
@@ -123,6 +129,7 @@ export const WalletProvider = ({ children }) => {
     () => [
       new PhantomWalletAdapter(),
       new SolflareWalletAdapter(),
+      new BackpackWalletAdapter(),
       new TorusWalletAdapter(),
       new LedgerWalletAdapter()
     ],
