@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Grid3X3, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import NFTCard from '../components/nft/NFTCard';
+import WalletButton from '../components/wallet/WalletButton';
 import { useWallet } from '../components/wallet/WalletContext';
 import { base44 } from '@/api/base44Client';
 
@@ -14,26 +15,42 @@ export default function NFTGallery() {
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('owned');
   const [nfts, setNfts] = useState([]);
+  const [allNfts, setAllNfts] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (connected && publicKeyFull) {
-      fetchNFTs();
-    } else {
-      setLoading(false);
+    fetchAllNFTs();
+    if (connected && publicKeyFull && activeTab === 'owned') {
+      fetchWalletNFTs();
     }
-  }, [connected, publicKeyFull]);
+  }, [connected, publicKeyFull, activeTab]);
 
-  const fetchNFTs = async () => {
+  const fetchWalletNFTs = async () => {
     try {
       setLoading(true);
-      const response = await base44.functions.invoke('getMagicEdenNFTs', { 
+      const response = await base44.functions.invoke('getWalletNFTs', { 
         walletAddress: publicKeyFull 
       });
       setNfts(response.data.nfts || []);
     } catch (error) {
-      console.error('Error fetching NFTs:', error);
+      console.error('Error fetching wallet NFTs:', error);
       setNfts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllNFTs = async () => {
+    try {
+      setLoading(true);
+      const response = await base44.functions.invoke('getMagicEdenNFTs');
+      setAllNfts(response.data.nfts || []);
+      if (activeTab === 'listed') {
+        setNfts(response.data.nfts || []);
+      }
+    } catch (error) {
+      console.error('Error fetching all NFTs:', error);
+      setAllNfts([]);
     } finally {
       setLoading(false);
     }
@@ -44,29 +61,10 @@ export default function NFTGallery() {
     nft.collection?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  if (!connected) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center"
-        >
-          <div className="w-24 h-24 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-[#9945FF]/30 to-[#14F195]/30 flex items-center justify-center">
-            <span className="text-4xl">🖼️</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-3">Your NFT Gallery</h2>
-          <p className="text-white/50 mb-6">Connect your wallet to view your NFT collection</p>
-          <Button className="bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white">
-            Connect Wallet
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
+  const displayNfts = activeTab === 'owned' ? (connected ? nfts : []) : (activeTab === 'listed' ? allNfts : []);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6 pb-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
@@ -74,8 +72,10 @@ export default function NFTGallery() {
         className="flex flex-col md:flex-row md:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">NFT Gallery</h1>
-          <p className="text-white/50">Your digital collectibles on Solana</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">NFT Gallery</h1>
+          <p className="text-white/50 text-sm md:text-base">
+            {activeTab === 'owned' ? 'Your digital collectibles' : 'Browse Solana NFTs'}
+          </p>
         </div>
         <div className="flex items-center gap-3">
           <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-1 flex">
@@ -116,16 +116,13 @@ export default function NFTGallery() {
           />
         </div>
         
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="bg-white/5 border border-white/10">
-            <TabsTrigger value="owned" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9945FF] data-[state=active]:to-[#14F195]">
-              Owned
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full md:w-auto">
+          <TabsList className="bg-white/5 border border-white/10 w-full md:w-auto">
+            <TabsTrigger value="owned" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9945FF] data-[state=active]:to-[#14F195] flex-1 md:flex-none">
+              My NFTs
             </TabsTrigger>
-            <TabsTrigger value="listed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9945FF] data-[state=active]:to-[#14F195]">
-              Listed
-            </TabsTrigger>
-            <TabsTrigger value="activity" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9945FF] data-[state=active]:to-[#14F195]">
-              Activity
+            <TabsTrigger value="listed" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-[#9945FF] data-[state=active]:to-[#14F195] flex-1 md:flex-none">
+              Explore
             </TabsTrigger>
           </TabsList>
         </Tabs>
@@ -144,25 +141,29 @@ export default function NFTGallery() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="grid grid-cols-2 md:grid-cols-4 gap-4"
+        className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4"
       >
-        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Total Collections</p>
-          <p className="text-2xl font-bold text-white">{nfts.length}</p>
+        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-3 md:p-4">
+          <p className="text-white/40 text-xs md:text-sm mb-1">
+            {activeTab === 'owned' ? 'My NFTs' : 'Collections'}
+          </p>
+          <p className="text-xl md:text-2xl font-bold text-white">{displayNfts.length}</p>
         </div>
-        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Total Volume</p>
-          <p className="text-2xl font-bold text-[#14F195]">
-            {nfts.reduce((sum, nft) => sum + parseFloat(nft.volume24h || 0), 0).toLocaleString()} SOL
+        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-3 md:p-4">
+          <p className="text-white/40 text-xs md:text-sm mb-1">Total Volume</p>
+          <p className="text-lg md:text-2xl font-bold text-[#14F195]">
+            {displayNfts.reduce((sum, nft) => sum + parseFloat(nft.volume24h || 0), 0).toFixed(0)} SOL
           </p>
         </div>
-        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Trending</p>
-          <p className="text-2xl font-bold text-white">{nfts.filter((n, i) => i < 5).length}</p>
+        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-3 md:p-4">
+          <p className="text-white/40 text-xs md:text-sm mb-1">Status</p>
+          <p className="text-lg md:text-2xl font-bold text-white">
+            {connected ? '🟢 Connected' : '🔴 Disconnected'}
+          </p>
         </div>
-        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Marketplaces</p>
-          <p className="text-2xl font-bold text-[#9945FF]">Magic Eden</p>
+        <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-3 md:p-4">
+          <p className="text-white/40 text-xs md:text-sm mb-1">Network</p>
+          <p className="text-lg md:text-2xl font-bold text-[#9945FF]">Mainnet</p>
         </div>
       </motion.div>
 
@@ -171,27 +172,38 @@ export default function NFTGallery() {
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 text-[#9945FF] animate-spin" />
         </div>
+      ) : displayNfts.length === 0 ? (
+        <div className="text-center py-16 px-4">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#9945FF]/20 to-[#14F195]/20 flex items-center justify-center">
+            <span className="text-4xl">🖼️</span>
+          </div>
+          {activeTab === 'owned' && !connected ? (
+            <>
+              <p className="text-white/60 text-lg mb-4">Connect your wallet to view your NFTs</p>
+              <WalletButton />
+            </>
+          ) : (
+            <p className="text-white/40 text-lg">No NFTs found</p>
+          )}
+        </div>
       ) : (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className={`grid gap-4 ${
+          className={`grid gap-3 md:gap-4 ${
             viewMode === 'large' 
-              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-              : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+              ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' 
+              : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
           }`}
         >
-          {filteredNFTs.map((nft, index) => (
+          {displayNfts.filter(nft =>
+            nft.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            nft.collection?.toLowerCase().includes(searchQuery.toLowerCase())
+          ).map((nft, index) => (
             <NFTCard key={nft.id} nft={nft} index={index} />
           ))}
         </motion.div>
-      )}
-
-      {!loading && filteredNFTs.length === 0 && (
-        <div className="text-center py-16">
-          <p className="text-white/40 text-lg">No NFT collections found</p>
-        </div>
       )}
     </div>
   );

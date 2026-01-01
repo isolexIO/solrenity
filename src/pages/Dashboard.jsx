@@ -5,19 +5,19 @@ import TokenList from '../components/dashboard/TokenList';
 import RecentActivity from '../components/dashboard/RecentActivity';
 import SwapPanel from '../components/swap/SwapPanel';
 import { useWallet } from '../components/wallet/WalletContext';
-import { Button } from "@/components/ui/button";
-import { Wallet, Zap, Shield, Globe } from "lucide-react";
+import WalletButton from '../components/wallet/WalletButton';
+import { Zap, Shield, Globe } from "lucide-react";
 
 export default function Dashboard() {
   const { connected } = useWallet();
 
   if (!connected) {
     return (
-      <div className="min-h-[80vh] flex items-center justify-center">
+      <div className="min-h-[80vh] flex items-center justify-center px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center max-w-lg"
+          className="text-center max-w-lg w-full"
         >
           {/* Animated Logo */}
           <motion.div
@@ -29,15 +29,15 @@ export default function Dashboard() {
             <span className="text-6xl font-bold text-white">S</span>
           </motion.div>
 
-          <h1 className="text-4xl font-bold text-white mb-4">
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#9945FF] to-[#14F195]">SOLrenity</span>
           </h1>
-          <p className="text-white/50 text-lg mb-8">
+          <p className="text-white/50 text-base md:text-lg mb-8">
             A serene gateway to the Solana ecosystem. Connect your wallet to begin your journey.
           </p>
 
           {/* Features */}
-          <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
             <div className="p-4 rounded-xl bg-white/5 border border-white/10">
               <Zap className="w-6 h-6 text-[#14F195] mx-auto mb-2" />
               <p className="text-white/70 text-sm">Lightning Fast</p>
@@ -52,34 +52,28 @@ export default function Dashboard() {
             </div>
           </div>
 
-          <Button 
-            size="lg"
-            className="bg-gradient-to-r from-[#9945FF] to-[#14F195] hover:opacity-90 text-white font-semibold px-8 py-6 text-lg rounded-xl"
-          >
-            <Wallet className="w-5 h-5 mr-2" />
-            Connect Wallet to Start
-          </Button>
+          <WalletButton />
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-6">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between"
+        className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
       >
         <div>
-          <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-          <p className="text-white/50">Welcome back to your Solana hub</p>
+          <h1 className="text-xl md:text-2xl font-bold text-white">Dashboard</h1>
+          <p className="text-white/50 text-sm md:text-base">Welcome back to your Solana hub</p>
         </div>
-      </motion.div>
+        </motion.div>
 
-      {/* Main Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Main Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Left Column - Balance & Tokens */}
         <div className="lg:col-span-2 space-y-6">
           <BalanceCard />

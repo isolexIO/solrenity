@@ -61,10 +61,10 @@ export default function TopBar() {
     <motion.header
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
-      className="fixed top-0 left-20 lg:left-64 right-0 h-16 bg-[#0D0D14]/95 backdrop-blur-xl border-b border-white/5 z-30 px-4 flex items-center gap-4"
+      className="fixed top-0 left-0 sm:left-20 lg:left-64 right-0 h-16 bg-[#0D0D14]/95 backdrop-blur-xl border-b border-white/5 z-30 px-2 sm:px-4 flex items-center gap-2 sm:gap-4"
     >
       {/* Browser Controls */}
-      <div className="flex items-center gap-1">
+      <div className="hidden md:flex items-center gap-1">
         <Button
           variant="ghost"
           size="icon"
@@ -126,14 +126,16 @@ export default function TopBar() {
       <Button
         variant="ghost"
         size="icon"
-        className="text-white/50 hover:text-[#FFB800] hover:bg-white/10 rounded-lg"
+        className="hidden sm:flex text-white/50 hover:text-[#FFB800] hover:bg-white/10 rounded-lg"
       >
         <Star className="w-5 h-5" />
       </Button>
 
       {/* Network & Wallet */}
-      <div className="flex items-center gap-3">
-        <NetworkSelector />
+      <div className="flex items-center gap-2 sm:gap-3">
+        <div className="hidden md:block">
+          <NetworkSelector />
+        </div>
         <WalletButton />
       </div>
     </motion.header>
