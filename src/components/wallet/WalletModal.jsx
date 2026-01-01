@@ -16,14 +16,14 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://phantom.app/img/phantom-logo.svg',
+    icon: 'https://raw.githubusercontent.com/phantom/branding/main/logomarks/Icon_Purple.png',
     color: 'from-purple-600 to-purple-900',
     installed: isMobile || (typeof window !== 'undefined' && window.phantom?.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://solflare.com/assets/logo.svg',
+    icon: 'https://raw.githubusercontent.com/solflare-wallet/branding/main/assets/svg/solflare-icon-orange.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
@@ -50,12 +50,17 @@ export default function WalletModal({ open, onClose }) {
 
   const generateJupiterQR = async () => {
     try {
-      // Jupiter Mobile uses deep link format
-      const appUrl = window.location.href;
-      const connectUrl = `solana:${appUrl}`;
+      // Create WalletConnect URI - Jupiter Mobile expects this format
+      const dappUrl = window.location.origin;
+      const bridgeUrl = 'https://bridge.walletconnect.org';
+      const key = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+      
+      const wcUri = `wc:${key}@1?bridge=${encodeURIComponent(bridgeUrl)}&key=${key}`;
       
       // Generate QR code with high error correction to allow logo overlay
-      const qrUrl = await QRCode.toDataURL(connectUrl, {
+      const qrUrl = await QRCode.toDataURL(wcUri, {
         width: 300,
         margin: 2,
         errorCorrectionLevel: 'H',
