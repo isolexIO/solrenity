@@ -25,7 +25,10 @@ const tokens = [
 ];
 
 export default function SwapPanel({ compact = false }) {
-  const { connected, publicKeyFull, wallet } = useWallet();
+  const walletContext = useWallet();
+  const { connected, publicKeyFull, wallet } = walletContext;
+  
+  console.log('SwapPanel - Wallet state:', { connected, publicKeyFull: publicKeyFull?.slice(0, 8) });
   const [fromToken, setFromToken] = useState('SOL');
   const [toToken, setToToken] = useState('USDC');
   const [fromAmount, setFromAmount] = useState('');
@@ -116,6 +119,9 @@ export default function SwapPanel({ compact = false }) {
       const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
       
       // Sign the transaction with wallet
+      if (!wallet || !wallet.signTransaction) {
+        throw new Error('Wallet not properly connected');
+      }
       const signedTransaction = await wallet.signTransaction(transaction);
       
       // Send the signed transaction using the connection from context
