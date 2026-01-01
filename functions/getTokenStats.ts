@@ -9,73 +9,57 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { mint } = await req.json();
-    
-    if (!mint) {
-      return Response.json({ error: 'Token mint is required' }, { status: 400 });
+    const { mintAddress } = await req.json();
+
+    if (!mintAddress) {
+      return Response.json({ error: 'Mint address is required' }, { status: 400 });
     }
 
-    // Fetch price data from Jupiter
-    const priceResponse = await fetch(`https://price.jup.ag/v4/price?ids=${mint}`);
+    // Fetch token stats from Jupiter
+    const [priceResponse, tokenInfoResponse] = await Promise.all([
+      fetch(`https://price.jup.ag/v6/price?ids=${mintAddress}`),
+      fetch(`https://tokens.jup.ag/token/${mintAddress}`)
+    ]);
+
     const priceData = await priceResponse.json();
-    
-    const tokenPrice = priceData.data?.[mint] || {};
+    const tokenInfo = await tokenInfoResponse.json();
 
-    // Fetch additional stats from Birdeye or DexScreener
+    const tokenPrice = priceData.data?.[mintAddress];
+
+    // Fetch 24h volume from Jupiter stats
     let volume24h = 0;
-    let marketCap = 0;
-    let priceChange24h = 0;
-
     try {
-      // Try Birdeye API for more detailed stats
-      const birdeyeResponse = await fetch(
-        `https://public-api.birdeye.so/defi/token_overview?address=${mint}`,
-        {
-          headers: {
-            'X-API-KEY': 'public' // Using public endpoint
-          }
-        }
+      const statsResponse = await fetch('https://stats.jup.ag/coingecko/tickers');
+      const tickers = await statsResponse.json();
+      const ticker = tickers.find(t => 
+        t.base_id === mintAddress || t.target_id === mintAddress
       );
-      
-      if (birdeyeResponse.ok) {
-        const birdeyeData = await birdeyeResponse.json();
-        if (birdeyeData.data) {
-          volume24h = birdeyeData.data.v24hUSD || 0;
-          marketCap = birdeyeData.data.mc || 0;
-          priceChange24h = birdeyeData.data.priceChange24hPercent || 0;
-        }
+      if (ticker) {
+        volume24h = ticker.volume || 0;
       }
     } catch (e) {
-      console.log('Birdeye API not available, using Jupiter data only');
-    }
-
-    // Fallback to DexScreener
-    if (volume24h === 0) {
-      try {
-        const dexResponse = await fetch(`https://api.dexscreener.com/latest/dex/tokens/${mint}`);
-        const dexData = await dexResponse.json();
-        
-        if (dexData.pairs && dexData.pairs.length > 0) {
-          const mainPair = dexData.pairs[0];
-          volume24h = parseFloat(mainPair.volume?.h24 || 0);
-          marketCap = parseFloat(mainPair.fdv || 0);
-          priceChange24h = parseFloat(mainPair.priceChange?.h24 || 0);
-        }
-      } catch (e) {
-        console.log('DexScreener API error:', e);
-      }
+      console.log('Volume fetch failed:', e);
     }
 
     return Response.json({
-      mint,
-      price: tokenPrice.price || 0,
-      priceChange24h,
-      volume24h,
-      marketCap
+      token: {
+        address: mintAddress,
+        symbol: tokenInfo.symbol || 'UNKNOWN',
+        name: tokenInfo.name || 'Unknown Token',
+        decimals: tokenInfo.decimals || 9,
+        logo: tokenInfo.logoURI || '',
+        price: tokenPrice?.price || 0,
+        priceChange24h: ((tokenPrice?.price || 0) - (tokenPrice?.price || 0)) / (tokenPrice?.price || 1) * 100,
+        volume24h: volume24h,
+        marketCap: tokenPrice?.marketCap || 0,
+        totalSupply: tokenInfo.totalSupply || 0,
+        tags: tokenInfo.tags || [],
+        extensions: tokenInfo.extensions || {}
+      }
     });
 
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error fetching token stats:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });

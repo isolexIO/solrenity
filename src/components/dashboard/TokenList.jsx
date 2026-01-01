@@ -4,11 +4,14 @@ import { TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 import { motion } from 'framer-motion';
 import { useWallet } from '../wallet/WalletContext';
 import { base44 } from '@/api/base44Client';
+import TokenDetailsModal from './TokenDetailsModal';
 
 export default function TokenList() {
   const { balance, connected, publicKeyFull } = useWallet();
   const [tokens, setTokens] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
+  const [selectedToken, setSelectedToken] = React.useState(null);
+  const [modalOpen, setModalOpen] = React.useState(false);
 
   React.useEffect(() => {
     if (connected && publicKeyFull) {
@@ -34,7 +37,8 @@ export default function TokenList() {
           balance: balance,
           price: solPrice,
           valueUsd: balance * solPrice,
-          color: '#14F195'
+          color: '#14F195',
+          mintAddress: 'So11111111111111111111111111111111111111112'
         }
       ];
 
@@ -93,6 +97,10 @@ export default function TokenList() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
             className="p-4 hover:bg-white/5 transition-colors cursor-pointer group"
+            onClick={() => {
+              setSelectedToken(token);
+              setModalOpen(true);
+            }}
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -141,6 +149,12 @@ export default function TokenList() {
         ))}
         </div>
       )}
+      
+      <TokenDetailsModal 
+        token={selectedToken} 
+        open={modalOpen} 
+        onClose={() => setModalOpen(false)} 
+      />
     </Card>
   );
 }
