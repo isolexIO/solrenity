@@ -100,6 +100,7 @@ export default function Home() {
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/227d77bce_SOLrenity.png" 
                 alt="SOLrenity" 
                 className="w-full h-full object-contain"
+                style={{ mixBlendMode: 'screen' }}
               />
             </motion.div>
 
