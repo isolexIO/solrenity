@@ -28,8 +28,8 @@ export default function Browser() {
   }
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col gap-4">
-      <div className="flex items-center gap-3">
+    <div className="fixed inset-0 left-20 lg:left-64 top-16 flex flex-col p-6 lg:p-8">
+      <div className="flex items-center gap-3 mb-4">
         <Link to={createPageUrl('Dashboard')}>
           <Button variant="ghost" size="icon" className="text-white/50 hover:text-white hover:bg-white/10">
             <ArrowLeft className="w-5 h-5" />
@@ -56,15 +56,15 @@ export default function Browser() {
         </Button>
       </div>
 
-      <Card className="bg-[#1A1A2E] border-white/10 flex-1 overflow-hidden">
+      <div className="flex-1 bg-[#1A1A2E] border border-white/10 rounded-2xl overflow-hidden">
         <iframe
           key={iframeKey}
           src={url}
-          className="w-full h-full"
+          className="w-full h-full border-0"
           sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
           title="Browser View"
         />
-      </Card>
+      </div>
     </div>
   );
 }
