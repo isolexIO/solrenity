@@ -22,7 +22,8 @@ import { useWallet } from '../components/wallet/WalletContext';
 import WalletModal from '../components/wallet/WalletModal';
 
 export default function Home() {
-  const { connected } = useWallet();
+  const walletContext = useWallet();
+  const connected = walletContext?.connected || false;
   const [showWalletModal, setShowWalletModal] = useState(false);
 
   const features = [
