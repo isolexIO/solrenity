@@ -8,29 +8,32 @@ import { Button } from "@/components/ui/button";
 export default function BalanceCard() {
   const { balance, connected } = useWallet();
   const [hidden, setHidden] = React.useState(false);
-  const [solPrice, setSolPrice] = React.useState(172.50);
+  const [solPrice, setSolPrice] = React.useState(0);
+  const [priceChange, setPriceChange] = React.useState(0);
+  const [loading, setLoading] = React.useState(true);
   
   const totalUsd = balance * solPrice;
-  const change24h = 5.42;
-  const isPositive = change24h > 0;
+  const isPositive = priceChange > 0;
 
   React.useEffect(() => {
-    // Fetch real SOL price
     const fetchPrice = async () => {
       try {
-        const response = await fetch('https://price.jup.ag/v4/price?ids=SOL');
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd&include_24hr_change=true');
         const data = await response.json();
-        if (data.data?.SOL?.price) {
-          setSolPrice(data.data.SOL.price);
+        if (data.solana) {
+          setSolPrice(data.solana.usd);
+          setPriceChange(data.solana.usd_24h_change || 0);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error fetching SOL price:', error);
+        setLoading(false);
       }
     };
     
     if (connected) {
       fetchPrice();
-      const interval = setInterval(fetchPrice, 60000); // Update every minute
+      const interval = setInterval(fetchPrice, 30000);
       return () => clearInterval(interval);
     }
   }, [connected]);
@@ -62,33 +65,35 @@ export default function BalanceCard() {
 
           <div className="space-y-1 mb-6">
             <h2 className="text-4xl font-bold text-white tracking-tight">
-              {hidden ? '••••••' : `$${totalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
+              {loading || hidden ? '••••••' : `$${totalUsd.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
             </h2>
             <div className="flex items-center gap-3">
               <span className="text-white/50 text-lg">
                 {hidden ? '••••' : `${balance.toFixed(4)} SOL`}
               </span>
-              <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-sm ${
-                isPositive ? 'bg-[#14F195]/20 text-[#14F195]' : 'bg-red-500/20 text-red-400'
-              }`}>
-                {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
-                {isPositive ? '+' : ''}{change24h}%
-              </div>
+              {!loading && (
+                <div className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-sm ${
+                  isPositive ? 'bg-[#14F195]/20 text-[#14F195]' : 'bg-red-500/20 text-red-400'
+                }`}>
+                  {isPositive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+                  {isPositive ? '+' : ''}{priceChange.toFixed(2)}%
+                </div>
+              )}
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 gap-4">
             <div className="bg-white/5 rounded-xl p-3">
               <p className="text-white/40 text-xs mb-1">SOL Price</p>
-              <p className="text-white font-semibold">${solPrice}</p>
+              <p className="text-white font-semibold">
+                {loading ? '...' : `$${solPrice.toFixed(2)}`}
+              </p>
             </div>
             <div className="bg-white/5 rounded-xl p-3">
-              <p className="text-white/40 text-xs mb-1">24h Volume</p>
-              <p className="text-white font-semibold">$2.4B</p>
-            </div>
-            <div className="bg-white/5 rounded-xl p-3">
-              <p className="text-white/40 text-xs mb-1">Gas Price</p>
-              <p className="text-[#14F195] font-semibold">Low</p>
+              <p className="text-white/40 text-xs mb-1">24h Change</p>
+              <p className={`font-semibold ${isPositive ? 'text-[#14F195]' : 'text-red-400'}`}>
+                {loading ? '...' : `${isPositive ? '+' : ''}${priceChange.toFixed(2)}%`}
+              </p>
             </div>
           </div>
         </div>

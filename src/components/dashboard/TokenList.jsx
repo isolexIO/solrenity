@@ -20,10 +20,10 @@ export default function TokenList() {
     try {
       setLoading(true);
       
-      // Fetch SOL price
-      const priceResponse = await fetch('https://price.jup.ag/v4/price?ids=SOL');
+      // Fetch SOL price from CoinGecko
+      const priceResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
       const priceData = await priceResponse.json();
-      const solPrice = priceData.data?.SOL?.price || 0;
+      const solPrice = priceData.solana?.usd || 0;
 
       // Add SOL
       const tokenList = [
@@ -34,7 +34,6 @@ export default function TokenList() {
           balance: balance,
           price: solPrice,
           valueUsd: balance * solPrice,
-          change: 0,
           color: '#14F195'
         }
       ];
@@ -44,19 +43,29 @@ export default function TokenList() {
         walletAddress: publicKeyFull 
       });
       
-      if (response.data.tokens) {
+      if (response.data.tokens && response.data.tokens.length > 0) {
         response.data.tokens.forEach(token => {
-          tokenList.push({
-            ...token,
-            change: 0,
-            color: '#9945FF'
-          });
+          if (token.balance > 0) {
+            tokenList.push({
+              ...token,
+              color: '#9945FF'
+            });
+          }
         });
       }
 
       setTokens(tokenList);
     } catch (error) {
       console.error('Error fetching tokens:', error);
+      setTokens([{
+        symbol: 'SOL',
+        name: 'Solana',
+        logo: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png',
+        balance: balance,
+        price: solPrice,
+        valueUsd: balance * solPrice,
+        color: '#14F195'
+      }]);
     } finally {
       setLoading(false);
     }
@@ -102,10 +111,10 @@ export default function TokenList() {
               </div>
               <div className="text-right">
                 <p className="text-white font-medium">
-                  {token.balance.toLocaleString()} {token.symbol}
+                  {token.balance < 0.01 ? token.balance.toFixed(6) : token.balance.toLocaleString(undefined, { maximumFractionDigits: 4 })} {token.symbol}
                 </p>
                 <p className="text-white/40 text-sm">
-                  ${token.valueUsd?.toLocaleString(undefined, { maximumFractionDigits: 2 }) || (token.balance * token.price).toLocaleString(undefined, { maximumFractionDigits: 2 })}
+                  ${(token.valueUsd || (token.balance * token.price)).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                 </p>
               </div>
             </div>
