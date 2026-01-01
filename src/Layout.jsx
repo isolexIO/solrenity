@@ -155,8 +155,13 @@ export default function Layout({ children, currentPageName }) {
             children
           )}
         </main>
+
+        {/* Footer */}
+        <footer className={`${currentPageName !== 'Home' ? 'ml-0 sm:ml-20 lg:ml-64' : ''} py-6 text-center text-white/30 text-sm border-t border-white/5`}>
+          <p>© {new Date().getFullYear()} Isolex Corporation. All rights reserved.</p>
+        </footer>
         </div>
         </div>
-    </WalletProvider>
-  );
-}
+        </WalletProvider>
+        );
+        }
