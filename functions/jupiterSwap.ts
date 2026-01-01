@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Get swap transaction from Jupiter
-    const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
+    // Get swap transaction from Jupiter - using public endpoint
+    const swapResponse = await fetch('https://public.jupiterapi.com/swap', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

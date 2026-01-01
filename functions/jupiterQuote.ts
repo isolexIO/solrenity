@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Get quote from Jupiter API v6
-    const quoteUrl = `https://quote-api.jup.ag/v6/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`;
+    // Get quote from Jupiter API v6 - using public endpoint
+    const quoteUrl = `https://public.jupiterapi.com/quote?inputMint=${inputMint}&outputMint=${outputMint}&amount=${amount}&slippageBps=${slippageBps}`;
     console.log('Fetching Jupiter quote:', quoteUrl);
     
     const quoteResponse = await fetch(quoteUrl);
