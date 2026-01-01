@@ -126,33 +126,56 @@ export default function TokenDetailsModal({ token, open, onClose }) {
               </div>
             )}
 
-            {/* Token Address */}
-            {token.mintAddress && (
+            {/* Trading Stats */}
+            <div className="grid grid-cols-2 gap-4">
               <div className="bg-white/5 rounded-xl p-4 border border-white/5">
-                <p className="text-white/50 text-xs uppercase tracking-wide mb-2">Token Address</p>
-                <div className="flex items-center gap-2">
-                  <code className="text-xs text-white/70 font-mono flex-1 truncate">
-                    {token.mintAddress}
-                  </code>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => copyToClipboard(token.mintAddress)}
-                    className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => window.open(`https://solscan.io/token/${token.mintAddress}`, '_blank')}
-                    className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </Button>
-                </div>
+                <p className="text-white/50 text-xs uppercase tracking-wide mb-2">24h High</p>
+                <p className="text-lg font-bold text-white">
+                  ${stats?.high24h?.toFixed(6) || token.price?.toFixed(6) || '0.00'}
+                </p>
               </div>
-            )}
+              <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+                <p className="text-white/50 text-xs uppercase tracking-wide mb-2">24h Low</p>
+                <p className="text-lg font-bold text-white">
+                  ${stats?.low24h?.toFixed(6) || token.price?.toFixed(6) || '0.00'}
+                </p>
+              </div>
+            </div>
+
+            {/* Token Address */}
+            <div className="bg-white/5 rounded-xl p-4 border border-white/5">
+              <p className="text-white/50 text-xs uppercase tracking-wide mb-2">Token Address</p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs text-white/70 font-mono flex-1 truncate">
+                  {token.mintAddress || 'So11111111111111111111111111111111111111112'}
+                </code>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => copyToClipboard(token.mintAddress || 'So11111111111111111111111111111111111111112')}
+                  className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => window.open(`https://solscan.io/token/${token.mintAddress || 'So11111111111111111111111111111111111111112'}`, '_blank')}
+                  className="h-8 w-8 text-white/50 hover:text-white hover:bg-white/10"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+
+            {/* Trade on Jupiter */}
+            <Button
+              onClick={() => window.open(`https://jup.ag/swap/SOL-${token.mintAddress || 'So11111111111111111111111111111111111111112'}`, '_blank')}
+              className="w-full bg-[#9945FF] hover:bg-[#9945FF]/90 text-white"
+            >
+              Trade on Jupiter
+              <ExternalLink className="w-4 h-4 ml-2" />
+            </Button>
 
             {/* Tags */}
             {stats?.tags && stats.tags.length > 0 && (
