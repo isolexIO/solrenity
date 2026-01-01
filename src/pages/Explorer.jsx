@@ -9,18 +9,18 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 
 const defaultDApps = [
-  { id: '1', name: 'Jupiter', description: 'The best swap aggregator on Solana. Trade any token with the best prices.', category: 'defi', is_verified: true, is_featured: true, tvl: '$780M', users_24h: 125000 },
-  { id: '2', name: 'Magic Eden', description: 'The leading NFT marketplace on Solana. Buy, sell and discover NFTs.', category: 'nft', is_verified: true, is_featured: true, tvl: '$45M', users_24h: 89000 },
-  { id: '3', name: 'Raydium', description: 'An on-chain order book AMM powering the evolution of DeFi.', category: 'defi', is_verified: true, is_featured: false, tvl: '$120M', users_24h: 45000 },
-  { id: '4', name: 'Marinade Finance', description: 'Stake SOL and receive mSOL for liquid staking rewards.', category: 'defi', is_verified: true, is_featured: true, tvl: '$1.2B', users_24h: 32000 },
-  { id: '5', name: 'Tensor', description: 'Advanced NFT trading platform with pro features.', category: 'nft', is_verified: true, is_featured: false, tvl: '$12M', users_24h: 28000 },
-  { id: '6', name: 'Realms', description: 'Create and manage DAOs on Solana with ease.', category: 'dao', is_verified: true, is_featured: false, users_24h: 15000 },
-  { id: '7', name: 'Star Atlas', description: 'A grand strategy game set in a virtual gaming metaverse.', category: 'gaming', is_verified: true, is_featured: true, users_24h: 22000 },
-  { id: '8', name: 'Phantom', description: 'The friendly crypto wallet built for DeFi & NFTs.', category: 'tools', is_verified: true, is_featured: false, users_24h: 450000 },
-  { id: '9', name: 'Solscan', description: 'Solana blockchain explorer providing real-time data.', category: 'infrastructure', is_verified: true, is_featured: false, users_24h: 180000 },
-  { id: '10', name: 'Dialect', description: 'Smart messaging protocol for web3.', category: 'social', is_verified: false, is_featured: false, users_24h: 8500 },
-  { id: '11', name: 'Orca', description: 'The most user-friendly DEX on Solana.', category: 'defi', is_verified: true, is_featured: false, tvl: '$85M', users_24h: 38000 },
-  { id: '12', name: 'Aurory', description: 'A tactical, turn-based JRPG blockchain game.', category: 'gaming', is_verified: true, is_featured: false, users_24h: 12000 },
+  { id: '1', name: 'Jupiter', logo_url: 'https://static.jup.ag/jup/icon.png', description: 'The best swap aggregator on Solana. Trade any token with the best prices.', category: 'defi', is_verified: true, is_featured: true, tvl: '$780M', users_24h: 125000 },
+  { id: '2', name: 'Magic Eden', logo_url: 'https://www.gitbook.com/cdn-cgi/image/width=256,dpr=2,height=256,fit=contain,format=auto/https%3A%2F%2F1690203049-files.gitbook.io%2F~%2Ffiles%2Fv0%2Fb%2Fgitbook-x-prod.appspot.com%2Fo%2Fspaces%252FjyYRUCxKmVgDuVxzVYLy%252Ficon%252FZn59oYYJjzqk8hM9kZgZ%252FMagicEden_Icon_Color.png%3Falt%3Dmedia%26token%3D638b93d2-71e3-49a2-aed8-d06aee3cd6ff', description: 'The leading NFT marketplace on Solana. Buy, sell and discover NFTs.', category: 'nft', is_verified: true, is_featured: true, tvl: '$45M', users_24h: 89000 },
+  { id: '3', name: 'Raydium', logo_url: 'https://raydium.io/logo/logo-only-light.svg', description: 'An on-chain order book AMM powering the evolution of DeFi.', category: 'defi', is_verified: true, is_featured: false, tvl: '$120M', users_24h: 45000 },
+  { id: '4', name: 'Marinade Finance', logo_url: 'https://marinade.finance/branding/marinade-logomark.png', description: 'Stake SOL and receive mSOL for liquid staking rewards.', category: 'defi', is_verified: true, is_featured: true, tvl: '$1.2B', users_24h: 32000 },
+  { id: '5', name: 'Tensor', logo_url: 'https://www.tensor.trade/images/logo.svg', description: 'Advanced NFT trading platform with pro features.', category: 'nft', is_verified: true, is_featured: false, tvl: '$12M', users_24h: 28000 },
+  { id: '6', name: 'Realms', logo_url: 'https://pbs.twimg.com/profile_images/1532717529767383040/MqaPq5mM_400x400.jpg', description: 'Create and manage DAOs on Solana with ease.', category: 'dao', is_verified: true, is_featured: false, users_24h: 15000 },
+  { id: '7', name: 'Star Atlas', logo_url: 'https://staratlas.com/favicon.ico', description: 'A grand strategy game set in a virtual gaming metaverse.', category: 'gaming', is_verified: true, is_featured: true, users_24h: 22000 },
+  { id: '8', name: 'Phantom', logo_url: 'https://phantom.app/img/phantom-logo.svg', description: 'The friendly crypto wallet built for DeFi & NFTs.', category: 'tools', is_verified: true, is_featured: false, users_24h: 450000 },
+  { id: '9', name: 'Solscan', logo_url: 'https://solscan.io/static/media/logo.1fac4ff8.svg', description: 'Solana blockchain explorer providing real-time data.', category: 'infrastructure', is_verified: true, is_featured: false, users_24h: 180000 },
+  { id: '10', name: 'Dialect', logo_url: 'https://dialect.to/favicon.svg', description: 'Smart messaging protocol for web3.', category: 'social', is_verified: false, is_featured: false, users_24h: 8500 },
+  { id: '11', name: 'Orca', logo_url: 'https://www.orca.so/android-chrome-192x192.png', description: 'The most user-friendly DEX on Solana.', category: 'defi', is_verified: true, is_featured: false, tvl: '$85M', users_24h: 38000 },
+  { id: '12', name: 'Aurory', logo_url: 'https://aurory.io/favicon.ico', description: 'A tactical, turn-based JRPG blockchain game.', category: 'gaming', is_verified: true, is_featured: false, users_24h: 12000 },
 ];
 
 export default function Explorer() {

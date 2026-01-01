@@ -30,11 +30,20 @@ export default function WalletModal({ open, onClose }) {
 
   const handleConnect = async (walletId) => {
     try {
-      await wallet.select(walletId);
-      await wallet.connect();
-      onClose();
+      // Select the wallet by name
+      const walletName = walletId === 'phantom' ? 'Phantom' : 'Solflare';
+      await wallet.select(walletName);
+      // Connection happens automatically after select
+      setTimeout(onClose, 500);
     } catch (error) {
       console.error('Error connecting:', error);
+      // If auto-connect fails, try manual connect
+      try {
+        await wallet.connect();
+        onClose();
+      } catch (err) {
+        console.error('Manual connect failed:', err);
+      }
     }
   };
 
