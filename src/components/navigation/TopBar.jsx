@@ -1,18 +1,35 @@
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Globe, Lock, ArrowLeft, ArrowRight, RotateCw, Star } from "lucide-react";
+import { Search, Globe, Lock, ArrowLeft, ArrowRight, RotateCw, Star, Loader2 } from "lucide-react";
 import WalletButton from '../wallet/WalletButton';
 import NetworkSelector from '../wallet/NetworkSelector';
 import { motion } from 'framer-motion';
+import { base44 } from '@/api/base44Client';
 
 export default function TopBar() {
   const [url, setUrl] = useState('');
   const [isSecure, setIsSecure] = useState(true);
+  const [resolving, setResolving] = useState(false);
 
-  const handleNavigate = (e) => {
+  const handleNavigate = async (e) => {
     e.preventDefault();
-    // Navigation logic would go here
+    
+    // Check if it's an SNS domain
+    if (url.endsWith('.sol')) {
+      setResolving(true);
+      try {
+        const response = await base44.functions.invoke('resolveSNS', { domain: url });
+        if (response.data.resolved) {
+          setUrl(response.data.address);
+          console.log('Resolved SNS domain:', response.data);
+        }
+      } catch (error) {
+        console.error('Error resolving SNS:', error);
+      } finally {
+        setResolving(false);
+      }
+    }
   };
 
   return (
@@ -58,18 +75,24 @@ export default function TopBar() {
           </div>
           <Input
             type="text"
-            placeholder="Search or enter Solana dApp URL"
+            placeholder="Search dApps, addresses, or .sol domains..."
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             className="w-full bg-white/5 border-white/10 text-white pl-10 pr-10 h-10 rounded-xl focus:border-[#9945FF] focus:ring-[#9945FF]/20 placeholder:text-white/30"
+            disabled={resolving}
           />
           <Button
             type="submit"
             variant="ghost"
             size="icon"
             className="absolute right-1 top-1/2 -translate-y-1/2 text-white/50 hover:text-white rounded-lg w-8 h-8"
+            disabled={resolving}
           >
-            <Search className="w-4 h-4" />
+            {resolving ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
           </Button>
         </div>
       </form>
