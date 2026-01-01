@@ -4,7 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, RefreshCw, ExternalLink } from "lucide-react";
 import { Link } from 'react-router-dom';
-import { createPageUrl } from './utils';
+import { createPageUrl } from '../utils';
 
 export default function Browser() {
   const [searchParams] = useSearchParams();
