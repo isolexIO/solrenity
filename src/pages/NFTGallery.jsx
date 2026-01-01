@@ -1,32 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, Grid3X3, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { Search, Grid3X3, LayoutGrid, SlidersHorizontal, Loader2 } from "lucide-react";
 import NFTCard from '../components/nft/NFTCard';
 import { useWallet } from '../components/wallet/WalletContext';
-
-const mockNFTs = [
-  { id: '1', name: 'DeGod #4521', collection: 'DeGods', image: 'https://images.unsplash.com/photo-1634986666676-ec8fd927c23d?w=400&h=400&fit=crop', price: 45.5, rarity: 'Legendary' },
-  { id: '2', name: 'y00t #8892', collection: 'y00ts', image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=400&h=400&fit=crop', price: 12.3, rarity: 'Rare' },
-  { id: '3', name: 'Mad Lads #1204', collection: 'Mad Lads', image: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?w=400&h=400&fit=crop', price: 89.0, rarity: 'Legendary' },
-  { id: '4', name: 'SMB #5567', collection: 'SMB Gen2', image: 'https://images.unsplash.com/photo-1614850523459-c2f4c699c52e?w=400&h=400&fit=crop', price: 28.7, rarity: 'Common' },
-  { id: '5', name: 'Okay Bears #2341', collection: 'Okay Bears', image: 'https://images.unsplash.com/photo-1635322966219-b75ed372eb01?w=400&h=400&fit=crop', price: 34.2, rarity: 'Rare' },
-  { id: '6', name: 'Claynosaurz #982', collection: 'Claynosaurz', image: 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400&h=400&fit=crop', price: 56.8, rarity: 'Legendary' },
-  { id: '7', name: 'Famous Fox #3421', collection: 'Famous Foxes', image: 'https://images.unsplash.com/photo-1618172193763-c511deb635ca?w=400&h=400&fit=crop', price: 8.5, rarity: 'Common' },
-  { id: '8', name: 'Aurory #1567', collection: 'Aurory', image: 'https://images.unsplash.com/photo-1617791160505-6f00504e3519?w=400&h=400&fit=crop', price: 15.3, rarity: 'Rare' },
-];
+import { base44 } from '@/api/base44Client';
 
 export default function NFTGallery() {
   const { connected } = useWallet();
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState('grid');
   const [activeTab, setActiveTab] = useState('owned');
+  const [nfts, setNfts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredNFTs = mockNFTs.filter(nft =>
-    nft.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    nft.collection.toLowerCase().includes(searchQuery.toLowerCase())
+  useEffect(() => {
+    if (connected) {
+      fetchNFTs();
+    }
+  }, [connected]);
+
+  const fetchNFTs = async () => {
+    try {
+      setLoading(true);
+      const response = await base44.functions.invoke('getMagicEdenNFTs');
+      setNfts(response.data.nfts || []);
+    } catch (error) {
+      console.error('Error fetching NFTs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredNFTs = nfts.filter(nft =>
+    nft.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    nft.collection?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   if (!connected) {
@@ -132,42 +142,50 @@ export default function NFTGallery() {
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
         <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Total NFTs</p>
-          <p className="text-2xl font-bold text-white">{mockNFTs.length}</p>
+          <p className="text-white/40 text-sm mb-1">Total Collections</p>
+          <p className="text-2xl font-bold text-white">{nfts.length}</p>
         </div>
         <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Floor Value</p>
-          <p className="text-2xl font-bold text-[#14F195]">◎ 290.3</p>
+          <p className="text-white/40 text-sm mb-1">Total Volume</p>
+          <p className="text-2xl font-bold text-[#14F195]">
+            {nfts.reduce((sum, nft) => sum + parseFloat(nft.volume24h || 0), 0).toLocaleString()} SOL
+          </p>
         </div>
         <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Collections</p>
-          <p className="text-2xl font-bold text-white">8</p>
+          <p className="text-white/40 text-sm mb-1">Trending</p>
+          <p className="text-2xl font-bold text-white">{nfts.filter((n, i) => i < 5).length}</p>
         </div>
         <div className="bg-[#1A1A2E] border border-white/10 rounded-xl p-4">
-          <p className="text-white/40 text-sm mb-1">Listed</p>
-          <p className="text-2xl font-bold text-[#9945FF]">2</p>
+          <p className="text-white/40 text-sm mb-1">Marketplaces</p>
+          <p className="text-2xl font-bold text-[#9945FF]">Magic Eden</p>
         </div>
       </motion.div>
 
       {/* NFT Grid */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className={`grid gap-4 ${
-          viewMode === 'large' 
-            ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
-            : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-        }`}
-      >
-        {filteredNFTs.map((nft, index) => (
-          <NFTCard key={nft.id} nft={nft} index={index} />
-        ))}
-      </motion.div>
+      {loading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 text-[#9945FF] animate-spin" />
+        </div>
+      ) : (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className={`grid gap-4 ${
+            viewMode === 'large' 
+              ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' 
+              : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+          }`}
+        >
+          {filteredNFTs.map((nft, index) => (
+            <NFTCard key={nft.id} nft={nft} index={index} />
+          ))}
+        </motion.div>
+      )}
 
-      {filteredNFTs.length === 0 && (
+      {!loading && filteredNFTs.length === 0 && (
         <div className="text-center py-16">
-          <p className="text-white/40 text-lg">No NFTs found</p>
+          <p className="text-white/40 text-lg">No NFT collections found</p>
         </div>
       )}
     </div>
