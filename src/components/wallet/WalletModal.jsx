@@ -50,67 +50,21 @@ export default function WalletModal({ open, onClose }) {
 
   const generateJupiterQR = async () => {
     try {
+      // Simple app URL - Jupiter Mobile will open it in their in-app browser
       const appUrl = window.location.origin;
-      const appName = 'SOLrenity';
       
-      // Create Solana Mobile Wallet Adapter connection URI
-      const connectionPayload = {
-        dapp: {
-          name: appName,
-          url: appUrl,
-          icon: 'https://solana.com/src/img/branding/solanaLogoMark.svg'
-        }
-      };
-      
-      // Encode as base64 for QR
-      const encodedPayload = btoa(JSON.stringify(connectionPayload));
-      const solanaUri = `solana:${appUrl}?connect=${encodedPayload}`;
-      
-      // Generate QR code
-      const qrUrl = await QRCode.toDataURL(solanaUri, {
+      // Generate clean QR code with the URL
+      const qrUrl = await QRCode.toDataURL(appUrl, {
         width: 300,
         margin: 2,
-        errorCorrectionLevel: 'H',
+        errorCorrectionLevel: 'M',
         color: {
           dark: '#000000',
           light: '#FFFFFF'
         }
       });
       
-      // Create canvas to add Jupiter logo
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = 300;
-      canvas.height = 300;
-      
-      const qrImage = new Image();
-      qrImage.onload = () => {
-        ctx.drawImage(qrImage, 0, 0, 300, 300);
-        
-        // Add white circle for logo
-        const centerX = 150;
-        const centerY = 150;
-        const radius = 35;
-        
-        ctx.fillStyle = '#FFFFFF';
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-        ctx.fill();
-        
-        // Draw Jupiter logo
-        const logo = new Image();
-        logo.crossOrigin = 'anonymous';
-        logo.onload = () => {
-          const logoSize = 60;
-          ctx.drawImage(logo, centerX - logoSize/2, centerY - logoSize/2, logoSize, logoSize);
-          setQrDataUrl(canvas.toDataURL());
-        };
-        logo.onerror = () => {
-          setQrDataUrl(canvas.toDataURL());
-        };
-        logo.src = 'https://static.jup.ag/jup/icon.png';
-      };
-      qrImage.src = qrUrl;
+      setQrDataUrl(qrUrl);
       
     } catch (error) {
       console.error('Error generating QR code:', error);
