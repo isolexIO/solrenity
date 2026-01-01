@@ -61,7 +61,10 @@ export default function WalletButton() {
           {copied ? <Check className="w-4 h-4 mr-2 text-[#14F195]" /> : <Copy className="w-4 h-4 mr-2" />}
           {copied ? 'Copied!' : 'Copy Address'}
         </DropdownMenuItem>
-        <DropdownMenuItem className="cursor-pointer hover:bg-white/5">
+        <DropdownMenuItem 
+          onClick={() => window.open(`https://www.orbmarkets.io/address/${publicKeyFull}`, '_blank')}
+          className="cursor-pointer hover:bg-white/5"
+        >
           <ExternalLink className="w-4 h-4 mr-2" />
           View on Explorer
         </DropdownMenuItem>
