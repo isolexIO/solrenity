@@ -12,7 +12,7 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://phantom.app/img/phantom-logo.svg',
+    icon: 'https://phantom.app/img/phantom-icon-purple.png',
     color: 'from-purple-600 to-purple-900',
     installed: typeof window !== 'undefined' && window.solana?.isPhantom
   },
@@ -22,6 +22,13 @@ const wallets = [
     icon: 'https://solflare.com/branding/solflare-logo.svg',
     color: 'from-orange-500 to-orange-700',
     installed: typeof window !== 'undefined' && window.solflare?.isSolflare
+  },
+  {
+    id: 'backpack',
+    name: 'Backpack',
+    icon: 'https://www.backpack.app/_next/image?url=%2Fbackpack-icon.png&w=64&q=75',
+    color: 'from-red-600 to-red-800',
+    installed: typeof window !== 'undefined' && window.backpack
   }
 ];
 

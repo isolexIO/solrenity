@@ -57,7 +57,8 @@ const WalletContextProvider = ({ children }) => {
 
       const data = await response.json();
       if (data.result?.value !== undefined) {
-        setBalance(data.result.value / 1e9); // Convert lamports to SOL
+        const solBalance = data.result.value / 1e9;
+        setBalance(Number(solBalance.toFixed(4))); // Convert lamports to SOL with precision
       }
     } catch (error) {
       console.error('Error fetching balance:', error);
@@ -121,7 +122,7 @@ export const WalletProvider = ({ children }) => {
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
-      new SolflareWalletAdapter(),
+      new SolflareWalletAdapter()
     ],
     []
   );
