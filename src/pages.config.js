@@ -8,6 +8,7 @@ import Home from './pages/Home';
 import NFTGallery from './pages/NFTGallery';
 import Settings from './pages/Settings';
 import Swap from './pages/Swap';
+import Learn from './pages/Learn';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +23,7 @@ export const PAGES = {
     "NFTGallery": NFTGallery,
     "Settings": Settings,
     "Swap": Swap,
+    "Learn": Learn,
 }
 
 export const pagesConfig = {
