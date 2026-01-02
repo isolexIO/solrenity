@@ -2,11 +2,8 @@ import React, { createContext, useContext, useMemo, useState, useEffect } from '
 import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
 import { 
   PhantomWalletAdapter, 
-  SolflareWalletAdapter, 
-  TorusWalletAdapter, 
-  LedgerWalletAdapter
+  SolflareWalletAdapter
 } from '@solana/wallet-adapter-wallets';
-import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
