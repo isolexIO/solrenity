@@ -7,6 +7,11 @@ import {
 } from "@/components/ui/dialog";
 import { useWallet } from './WalletContext';
 import { motion } from 'framer-motion';
+import { QrCode } from 'lucide-react';
+import QRCode from 'qrcode';
+
+
+
 const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 const wallets = [
@@ -23,13 +28,74 @@ const wallets = [
     icon: 'https://raw.githubusercontent.com/solflare-wallet/branding/main/assets/svg/solflare-icon-orange.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
+  },
+  {
+    id: 'walletconnect',
+    name: 'Jupiter Mobile',
+    icon: 'https://static.jup.ag/jup/icon.png',
+    color: 'from-green-500 to-teal-600',
+    installed: false,
+    qrConnect: true
   }
 ];
 
 export default function WalletModal({ open, onClose }) {
   const { wallet } = useWallet();
+  const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [wcUri, setWcUri] = useState('');
 
   const handleConnect = async (walletId) => {
+    if (walletId === 'walletconnect') {
+      setShowWalletConnectQR(true);
+      
+      try {
+        // Find WalletConnect adapter
+        const wcWallet = wallet?.wallets?.find(w => 
+          w.adapter.name.toLowerCase().includes('walletconnect')
+        );
+        
+        if (wcWallet) {
+          // Select WalletConnect
+          wallet.select(wcWallet.adapter.name);
+          
+          await new Promise(resolve => setTimeout(resolve, 200));
+          
+          // Listen for URI
+          const adapter = wcWallet.adapter;
+          if (adapter._wallet?.connector) {
+            adapter._wallet.connector.on('display_uri', async (uri) => {
+              console.log('WalletConnect URI:', uri);
+              setWcUri(uri);
+              
+              // Generate QR code
+              const qr = await QRCode.toDataURL(uri, {
+                width: 300,
+                margin: 2,
+                errorCorrectionLevel: 'M',
+                color: {
+                  dark: '#000000',
+                  light: '#FFFFFF'
+                }
+              });
+              setQrDataUrl(qr);
+            });
+          }
+          
+          // Initiate connection (this will trigger display_uri)
+          wallet.connect().then(() => {
+            setShowWalletConnectQR(false);
+            onClose();
+          }).catch((err) => {
+            console.error('WalletConnect error:', err);
+          });
+        }
+      } catch (error) {
+        console.error('Error setting up WalletConnect:', error);
+      }
+      return;
+    }
+
     try {
       const walletNames = {
         'phantom': 'Phantom',
@@ -76,9 +142,17 @@ export default function WalletModal({ open, onClose }) {
   };
 
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={(isOpen) => {
+      if (!isOpen) {
+        setShowWalletConnectQR(false);
+        setQrDataUrl('');
+        setWcUri('');
+      }
+      onClose();
+    }}>
       <DialogContent className="bg-[#1A1A2E] border-white/10 text-white max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
-        <>
+        {!showWalletConnectQR ? (
+          <>
             <DialogHeader>
               <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
                 Connect Wallet
@@ -110,10 +184,11 @@ export default function WalletModal({ open, onClose }) {
                       {wallet.name}
                     </h3>
                     <p className="text-xs text-white/40">
-                      {wallet.installed ? 'Tap to connect' : 'Not installed'}
+                      {wallet.qrConnect ? 'Scan QR to connect' : wallet.installed ? 'Tap to connect' : 'Not installed'}
                     </p>
                   </div>
-                  <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />
+                  {wallet.qrConnect && <QrCode className="w-5 h-5 text-[#14F195]" />}
+                  {!wallet.qrConnect && <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />}
                 </motion.button>
               ))}
             </div>
@@ -122,6 +197,56 @@ export default function WalletModal({ open, onClose }) {
               By connecting, you agree to our Terms of Service
             </p>
           </>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+          >
+            <DialogHeader>
+              <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
+                Scan with Jupiter Mobile
+              </DialogTitle>
+              <p className="text-white/50 text-center text-sm">
+                Open Jupiter Mobile app and scan this QR code
+              </p>
+            </DialogHeader>
+
+            <div className="mt-6 flex flex-col items-center">
+              {qrDataUrl ? (
+                <div className="bg-white p-4 rounded-2xl">
+                  <img src={qrDataUrl} alt="WalletConnect QR" className="w-[300px] h-[300px]" />
+                </div>
+              ) : (
+                <div className="bg-white/5 p-4 rounded-2xl w-[300px] h-[300px] flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#14F195]"></div>
+                </div>
+              )}
+
+              <div className="mt-6 space-y-2 text-center">
+                <p className="text-white/70 text-sm">Don't have Jupiter Mobile?</p>
+                <a 
+                  href="https://jup.ag/mobile" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[#14F195] text-sm font-semibold hover:underline"
+                >
+                  Download Jupiter Mobile
+                </a>
+              </div>
+
+              <button
+                onClick={() => {
+                  setShowWalletConnectQR(false);
+                  setQrDataUrl('');
+                  setWcUri('');
+                }}
+                className="mt-6 text-white/50 hover:text-white text-sm"
+              >
+                ← Back to wallet options
+              </button>
+            </div>
+          </motion.div>
+        )}
       </DialogContent>
     </Dialog>
   );

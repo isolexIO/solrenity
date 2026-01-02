@@ -2,8 +2,11 @@ import React, { createContext, useContext, useMemo, useState, useEffect } from '
 import { ConnectionProvider, WalletProvider as SolanaWalletProvider, useWallet as useSolanaWallet, useConnection } from '@solana/wallet-adapter-react';
 import { 
   PhantomWalletAdapter, 
-  SolflareWalletAdapter
+  SolflareWalletAdapter, 
+  TorusWalletAdapter, 
+  LedgerWalletAdapter
 } from '@solana/wallet-adapter-wallets';
+import { WalletConnectWalletAdapter } from '@solana/wallet-adapter-walletconnect';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 
 const WalletContext = createContext(null);
@@ -125,7 +128,22 @@ export const WalletProvider = ({ children }) => {
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
-      new SolflareWalletAdapter()
+      new SolflareWalletAdapter(),
+      new TorusWalletAdapter(),
+      new LedgerWalletAdapter(),
+      new WalletConnectWalletAdapter({
+        network: network,
+        options: {
+          relayUrl: 'wss://relay.walletconnect.com',
+          projectId: 'e8b6c3f7d4e9a2b5c8f1d3e6a9b2c5f8',
+          metadata: {
+            name: 'SOLrenity',
+            description: 'A serene gateway to the Solana ecosystem',
+            url: typeof window !== 'undefined' ? window.location.origin : 'https://solrenity.app',
+            icons: ['https://solana.com/src/img/branding/solanaLogoMark.svg']
+          }
+        }
+      })
     ],
     [network]
   );
