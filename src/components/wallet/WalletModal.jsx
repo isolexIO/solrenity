@@ -29,14 +29,7 @@ const wallets = [
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
-  {
-    id: 'walletconnect',
-    name: 'Jupiter Mobile',
-    icon: 'https://static.jup.ag/jup/icon.png',
-    color: 'from-green-500 to-teal-600',
-    installed: false,
-    qrConnect: true
-  }
+
 ];
 
 export default function WalletModal({ open, onClose }) {
