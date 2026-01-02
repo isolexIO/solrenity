@@ -138,55 +138,6 @@ export default function WalletModal({ open, onClose }) {
               By connecting, you agree to our Terms of Service
             </p>
           </>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-          >
-            <DialogHeader>
-              <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
-                Scan with Jupiter Mobile
-              </DialogTitle>
-              <p className="text-white/50 text-center text-sm">
-                Open Jupiter Mobile app and scan this QR code
-              </p>
-            </DialogHeader>
-
-            <div className="mt-6 flex flex-col items-center">
-              {qrDataUrl ? (
-                <div className="bg-white p-4 rounded-2xl">
-                  <img src={qrDataUrl} alt="WalletConnect QR" className="w-[300px] h-[300px]" />
-                </div>
-              ) : (
-                <div className="bg-white/5 p-4 rounded-2xl w-[300px] h-[300px] flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#14F195]"></div>
-                </div>
-              )}
-
-              <div className="mt-6 space-y-2 text-center">
-                <p className="text-white/70 text-sm">Don't have Jupiter Mobile?</p>
-                <a 
-                  href="https://jup.ag/mobile" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-[#14F195] text-sm font-semibold hover:underline"
-                >
-                  Download Jupiter Mobile
-                </a>
-              </div>
-
-              <button
-                onClick={() => {
-                  setShowWalletConnectQR(false);
-                  setQrDataUrl('');
-                  setWcUri('');
-                }}
-                className="mt-6 text-white/50 hover:text-white text-sm"
-              >
-                ← Back to wallet options
-              </button>
-            </div>
-          </motion.div>
         )}
       </DialogContent>
     </Dialog>
