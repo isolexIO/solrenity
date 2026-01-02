@@ -83,8 +83,7 @@ export default function WalletModal({ open, onClose }) {
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="bg-[#1A1A2E] border-white/10 text-white max-w-md mx-4 sm:mx-auto max-h-[90vh] overflow-y-auto">
-        {!showWalletConnectQR ? (
-          <>
+        <>
             <DialogHeader>
               <DialogTitle className="text-xl sm:text-2xl font-bold text-center mb-2">
                 Connect Wallet
