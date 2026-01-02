@@ -51,18 +51,15 @@ const WalletContextProvider = ({ children }) => {
   const fetchBalance = async () => {
     try {
       if (!solanaWallet.publicKey || !connection) {
-        console.log('No publicKey or connection available');
         return;
       }
-      
-      console.log('Fetching balance for:', solanaWallet.publicKey.toBase58());
-      const lamports = await connection.getBalance(solanaWallet.publicKey);
+
+      const lamports = await connection.getBalance(solanaWallet.publicKey, 'confirmed');
       const solBalance = lamports / LAMPORTS_PER_SOL;
-      console.log('Balance fetched:', solBalance, 'SOL');
       setBalance(Number(solBalance.toFixed(4)));
     } catch (error) {
       console.error('Error fetching balance:', error);
-      setBalance(0);
+      // Don't reset balance on error, keep previous value
     }
   };
 
@@ -125,6 +122,12 @@ export const WalletProvider = ({ children }) => {
     }
   }, [network]);
 
+  const connectionConfig = useMemo(() => ({
+    commitment: 'confirmed',
+    disableRetryOnRateLimit: true,
+    confirmTransactionInitialTimeout: 60000
+  }), []);
+
   const wallets = useMemo(
     () => [
       new PhantomWalletAdapter(),
@@ -149,8 +152,8 @@ export const WalletProvider = ({ children }) => {
   );
 
   return (
-    <ConnectionProvider endpoint={endpoint} config={{ commitment: 'confirmed' }}>
-      <SolanaWalletProvider wallets={wallets} autoConnect={true}>
+    <ConnectionProvider endpoint={endpoint} config={connectionConfig}>
+      <SolanaWalletProvider wallets={wallets} autoConnect={false}>
         <WalletContextProvider>
           {children}
         </WalletContextProvider>
