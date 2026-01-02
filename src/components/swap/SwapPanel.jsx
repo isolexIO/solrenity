@@ -173,10 +173,10 @@ export default function SwapPanel({ compact = false }) {
       const transaction = VersionedTransaction.deserialize(swapTransactionBuf);
       
       // Sign the transaction with wallet
-      if (!wallet || !wallet.signTransaction) {
-        throw new Error('Wallet not properly connected');
+      if (!wallet?.wallet?.adapter?.signTransaction) {
+        throw new Error('Wallet not properly connected for signing');
       }
-      const signedTransaction = await wallet.signTransaction(transaction);
+      const signedTransaction = await wallet.wallet.adapter.signTransaction(transaction);
       
       // Send the signed transaction using the connection from context
       const { Connection } = await import('@solana/web3.js');

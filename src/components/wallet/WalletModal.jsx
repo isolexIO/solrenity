@@ -18,14 +18,14 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://raw.githubusercontent.com/phantom/branding/main/logomarks/Icon_Purple.png',
+    icon: 'https://phantom.app/img/phantom-icon-purple.png',
     color: 'from-purple-600 to-purple-900',
     installed: isMobile || (typeof window !== 'undefined' && window.phantom?.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://raw.githubusercontent.com/solflare-wallet/branding/main/assets/svg/solflare-icon-orange.svg',
+    icon: 'https://solflare.com/assets/logo.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
