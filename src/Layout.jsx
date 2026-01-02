@@ -1,4 +1,5 @@
 import React from 'react';
+import './components/polyfills';
 import { WalletProvider } from './components/wallet/WalletContext';
 import Sidebar from './components/navigation/Sidebar';
 import TopBar from './components/navigation/TopBar';

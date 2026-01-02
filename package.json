@@ -84,7 +84,8 @@
     "@solana/wallet-adapter-base": "^0.9.23",
     "bs58": "^5.0.0",
     "qrcode": "^1.5.3",
-    "@solana/wallet-adapter-walletconnect": "^0.1.16"
+    "@solana/wallet-adapter-walletconnect": "^0.1.16",
+    "buffer": "^6.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
