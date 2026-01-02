@@ -35,7 +35,7 @@ export default function TokenStats() {
 
       // Get prices from Jupiter
       const mintAddresses = popularTokens.map(t => t.address).join(',');
-      const priceResponse = await fetch(`https://api.jup.ag/price/v2?ids=${mintAddresses}&showExtraInfo=true`);
+      const priceResponse = await fetch(`https://price.jup.ag/v4/price?ids=${mintAddresses}`);
       const priceData = await priceResponse.json();
       
       // Merge token info with price data
@@ -47,8 +47,8 @@ export default function TokenStats() {
           name: token.name,
           logoURI: `https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/${token.address}/logo.png`,
           price: priceInfo?.price || 0,
-          priceChange24h: priceInfo?.extraInfo?.quotedPrice?.change24hPercent || 0,
-          daily_volume: priceInfo?.extraInfo?.quotedPrice?.buyAmount24h || 0,
+          priceChange24h: ((priceInfo?.price - priceInfo?.extraInfo?.lastSwappedPrice?.lastJupiterSellPrice) / priceInfo?.extraInfo?.lastSwappedPrice?.lastJupiterSellPrice * 100) || 0,
+          daily_volume: priceInfo?.extraInfo?.quotedPrice?.buyAmount || 0,
         };
       }).filter(t => t.price > 0);
     },
