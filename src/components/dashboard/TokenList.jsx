@@ -52,6 +52,7 @@ export default function TokenList() {
           if (token.balance > 0) {
             tokenList.push({
               ...token,
+              mintAddress: token.mint,
               color: '#9945FF'
             });
           }
