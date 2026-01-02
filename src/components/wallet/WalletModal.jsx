@@ -126,11 +126,10 @@ export default function WalletModal({ open, onClose }) {
                       {wallet.name}
                     </h3>
                     <p className="text-xs text-white/40">
-                      {wallet.qrConnect ? 'Scan QR to connect' : wallet.installed ? 'Tap to connect' : 'Not installed'}
+                      {wallet.installed ? 'Tap to connect' : 'Not installed'}
                     </p>
                   </div>
-                  {wallet.qrConnect && <QrCode className="w-5 h-5 text-[#14F195]" />}
-                  {!wallet.qrConnect && <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />}
+                  <div className="w-2 h-2 rounded-full bg-white/20 group-hover:bg-[#14F195] transition-colors" />
                 </motion.button>
               ))}
             </div>
