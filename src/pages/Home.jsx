@@ -23,18 +23,15 @@ import WalletModal from '../components/wallet/WalletModal';
 
 export default function Home() {
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const [connected, setConnected] = useState(false);
-
-  // Safely access wallet context
-  React.useEffect(() => {
-    try {
-      const walletContext = useWallet();
-      setConnected(walletContext?.connected || false);
-    } catch (error) {
-      console.error('Wallet context error:', error);
-      setConnected(false);
-    }
-  }, []);
+  
+  // Safely get wallet context with error handling
+  let connected = false;
+  try {
+    const walletContext = useWallet();
+    connected = walletContext?.connected || false;
+  } catch (error) {
+    console.error('Wallet context not available:', error);
+  }
 
   const features = [
     {
