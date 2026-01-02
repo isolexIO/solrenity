@@ -30,13 +30,6 @@ const wallets = [
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
   {
-    id: 'torus',
-    name: 'Torus',
-    icon: 'https://tor.us/images/torus-icon-blue.svg',
-    color: 'from-blue-500 to-blue-700',
-    installed: true
-  },
-  {
     id: 'ledger',
     name: 'Ledger',
     icon: 'https://www.ledger.com/wp-content/themes/ledger-v2/public/images/ledger-logo-short.svg',
@@ -56,7 +49,6 @@ export default function WalletModal({ open, onClose }) {
       const walletNames = {
         'phantom': 'Phantom',
         'solflare': 'Solflare',
-        'torus': 'Torus',
         'ledger': 'Ledger'
       };
       const walletName = walletNames[walletId] || 'Phantom';
@@ -88,8 +80,7 @@ export default function WalletModal({ open, onClose }) {
       if (isMobile) {
         const mobileLinks = {
           'phantom': 'https://phantom.app/ul/browse/' + encodeURIComponent(window.location.href) + '?ref=solrenity',
-          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href),
-          'torus': 'https://app.tor.us'
+          'solflare': 'https://solflare.com/ul/v1/browse/' + encodeURIComponent(window.location.href)
         };
         
         const link = mobileLinks[walletId];
