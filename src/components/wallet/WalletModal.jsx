@@ -38,56 +38,6 @@ export default function WalletModal({ open, onClose }) {
   const [wcUri, setWcUri] = useState('');
 
   const handleConnect = async (walletId) => {
-    if (walletId === 'walletconnect') {
-      setShowWalletConnectQR(true);
-      
-      try {
-        // Find WalletConnect adapter
-        const wcWallet = wallet?.wallets?.find(w => 
-          w.adapter.name.toLowerCase().includes('walletconnect')
-        );
-        
-        if (wcWallet) {
-          // Select WalletConnect
-          wallet.select(wcWallet.adapter.name);
-          
-          await new Promise(resolve => setTimeout(resolve, 200));
-          
-          // Listen for URI
-          const adapter = wcWallet.adapter;
-          if (adapter._wallet?.connector) {
-            adapter._wallet.connector.on('display_uri', async (uri) => {
-              console.log('WalletConnect URI:', uri);
-              setWcUri(uri);
-              
-              // Generate QR code
-              const qr = await QRCode.toDataURL(uri, {
-                width: 300,
-                margin: 2,
-                errorCorrectionLevel: 'M',
-                color: {
-                  dark: '#000000',
-                  light: '#FFFFFF'
-                }
-              });
-              setQrDataUrl(qr);
-            });
-          }
-          
-          // Initiate connection (this will trigger display_uri)
-          wallet.connect().then(() => {
-            setShowWalletConnectQR(false);
-            onClose();
-          }).catch((err) => {
-            console.error('WalletConnect error:', err);
-          });
-        }
-      } catch (error) {
-        console.error('Error setting up WalletConnect:', error);
-      }
-      return;
-    }
-
     try {
       const walletNames = {
         'phantom': 'Phantom',
