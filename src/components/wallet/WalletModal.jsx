@@ -18,21 +18,21 @@ const wallets = [
   {
     id: 'phantom',
     name: 'Phantom',
-    icon: 'https://avatars.githubusercontent.com/u/78782331?s=200&v=4',
+    icon: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/49fb85594_Phantom-Logo-Purple.png',
     color: 'from-purple-600 to-purple-900',
     installed: isMobile || (typeof window !== 'undefined' && window.phantom?.solana?.isPhantom)
   },
   {
     id: 'solflare',
     name: 'Solflare',
-    icon: 'https://avatars.githubusercontent.com/u/67903667?s=200&v=4',
+    icon: 'https://solflare.com/assets/icon-256.png',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
   },
   {
     id: 'ledger',
     name: 'Ledger',
-    icon: 'https://www.ledger.com/wp-content/themes/ledger-v2/public/images/ledger-logo-short.svg',
+    icon: 'https://cdn.shopify.com/s/files/1/2974/4858/files/Ledger-Logo-3D.png?v=1678887754',
     color: 'from-gray-600 to-gray-800',
     installed: true
   }
