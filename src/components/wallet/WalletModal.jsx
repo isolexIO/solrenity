@@ -28,14 +28,6 @@ const wallets = [
     icon: 'https://raw.githubusercontent.com/solflare-wallet/branding/main/assets/svg/solflare-icon-orange.svg',
     color: 'from-orange-500 to-orange-700',
     installed: isMobile || (typeof window !== 'undefined' && window.solflare?.isSolflare)
-  },
-  {
-    id: 'walletconnect',
-    name: 'Jupiter Mobile',
-    icon: 'https://static.jup.ag/jup/icon.png',
-    color: 'from-green-500 to-teal-600',
-    installed: false,
-    qrConnect: true
   }
 ];
 
