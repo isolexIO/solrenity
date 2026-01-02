@@ -33,9 +33,6 @@ const wallets = [
 
 export default function WalletModal({ open, onClose }) {
   const { wallet } = useWallet();
-  const [showWalletConnectQR, setShowWalletConnectQR] = useState(false);
-  const [qrDataUrl, setQrDataUrl] = useState('');
-  const [wcUri, setWcUri] = useState('');
 
   const handleConnect = async (walletId) => {
     try {
