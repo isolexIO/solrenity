@@ -7,11 +7,6 @@ import {
 } from "@/components/ui/dialog";
 import { useWallet } from './WalletContext';
 import { motion } from 'framer-motion';
-import { QrCode } from 'lucide-react';
-import QRCode from 'qrcode';
-
-
-
 const isMobile = typeof window !== 'undefined' && /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 const wallets = [
