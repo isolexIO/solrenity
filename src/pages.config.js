@@ -5,10 +5,10 @@ import Dashboard from './pages/Dashboard';
 import Explorer from './pages/Explorer';
 import History from './pages/History';
 import Home from './pages/Home';
+import Learn from './pages/Learn';
 import NFTGallery from './pages/NFTGallery';
 import Settings from './pages/Settings';
 import Swap from './pages/Swap';
-import Learn from './pages/Learn';
 import TokenStats from './pages/TokenStats';
 import __Layout from './Layout.jsx';
 
@@ -21,10 +21,10 @@ export const PAGES = {
     "Explorer": Explorer,
     "History": History,
     "Home": Home,
+    "Learn": Learn,
     "NFTGallery": NFTGallery,
     "Settings": Settings,
     "Swap": Swap,
-    "Learn": Learn,
     "TokenStats": TokenStats,
 }
 
