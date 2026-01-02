@@ -122,7 +122,6 @@ export default function WalletModal({ open, onClose }) {
               By connecting, you agree to our Terms of Service
             </p>
           </>
-        )}
       </DialogContent>
     </Dialog>
   );
