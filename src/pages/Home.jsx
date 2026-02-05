@@ -103,11 +103,7 @@ export default function Home() {
               transition={{ type: "spring", duration: 0.8 }}
               className="w-40 h-40 mx-auto mb-8"
             >
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69566c492c88b504e634f23f/47c94b383_SOLrenity2.png" 
-                alt="SOLrenity" 
-                className="w-full h-full object-contain"
-              />
+            
             </motion.div>
 
             <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-6">
