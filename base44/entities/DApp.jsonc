@@ -1,0 +1,66 @@
+{
+  "name": "DApp",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "dApp name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief description"
+    },
+    "url": {
+      "type": "string",
+      "description": "dApp URL"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Logo image URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "defi",
+        "nft",
+        "gaming",
+        "dao",
+        "tools",
+        "social",
+        "infrastructure"
+      ],
+      "description": "dApp category"
+    },
+    "is_verified": {
+      "type": "boolean",
+      "description": "Whether the dApp is verified"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "description": "Whether the dApp is featured"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for searchability"
+    },
+    "tvl": {
+      "type": "string",
+      "description": "Total Value Locked display string"
+    },
+    "users_24h": {
+      "type": "number",
+      "description": "Active users in last 24 hours"
+    },
+    "referral_code": {
+      "type": "string",
+      "description": "Referral code to append to URLs"
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ]
+}

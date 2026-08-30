@@ -1,0 +1,61 @@
+{
+  "name": "Transaction",
+  "type": "object",
+  "properties": {
+    "signature": {
+      "type": "string",
+      "description": "Transaction signature"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "swap",
+        "transfer",
+        "stake",
+        "unstake",
+        "nft_buy",
+        "nft_sell",
+        "contract"
+      ],
+      "description": "Transaction type"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "failed"
+      ],
+      "description": "Transaction status"
+    },
+    "from_token": {
+      "type": "string",
+      "description": "Source token symbol"
+    },
+    "to_token": {
+      "type": "string",
+      "description": "Destination token symbol"
+    },
+    "amount": {
+      "type": "number",
+      "description": "Amount transferred"
+    },
+    "amount_usd": {
+      "type": "number",
+      "description": "USD value at time of transaction"
+    },
+    "fee": {
+      "type": "number",
+      "description": "Transaction fee in SOL"
+    },
+    "wallet_address": {
+      "type": "string",
+      "description": "Wallet address involved"
+    }
+  },
+  "required": [
+    "signature",
+    "type",
+    "status"
+  ]
+}

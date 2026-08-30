@@ -1,0 +1,46 @@
+{
+  "name": "Token",
+  "type": "object",
+  "properties": {
+    "symbol": {
+      "type": "string",
+      "description": "Token symbol (e.g., SOL, USDC)"
+    },
+    "name": {
+      "type": "string",
+      "description": "Full token name"
+    },
+    "mint_address": {
+      "type": "string",
+      "description": "Token mint address"
+    },
+    "decimals": {
+      "type": "number",
+      "description": "Token decimals"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Token logo URL"
+    },
+    "price_usd": {
+      "type": "number",
+      "description": "Current price in USD"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "native",
+        "stablecoin",
+        "defi",
+        "meme",
+        "nft",
+        "gaming"
+      ],
+      "description": "Token category"
+    }
+  },
+  "required": [
+    "symbol",
+    "name"
+  ]
+}
